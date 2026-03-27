@@ -4,7 +4,7 @@ const UserAuthForm = ({type}) => {
     return (
         <section className="h-cover flex items-center justify-center">
             <form className="w-[80%] max-w-[400px]">
-                <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
+                <h1 className="text-4xl font-family: 'Inter', sans-serif capitalize text-center mb-24">
                     {type == "sign-in" ? "Sign in" : "Sign up"}
                 </h1>
                 {
