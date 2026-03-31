@@ -1,4 +1,5 @@
 import EditorJS from "@editorjs/editorjs";
+
 import { useEffect, useRef } from "react";
 
 export default function Editor({ setContent }) {
