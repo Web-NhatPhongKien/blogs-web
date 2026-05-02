@@ -1,4 +1,5 @@
 // import AnimationWrapper from "../common/page-animation";
+import BlogPostCard from "../components/blog-post";
 import InPageNavigation from "../components/inpage-navigation";
 
 const HomePage = () => {
@@ -7,9 +8,16 @@ const HomePage = () => {
             <section className="h-cover flex justify-center gap-10">
                 <div className="w-full">
                     <InPageNavigation routes={["home", "trending blogs"]} defaultHidden={["trending blogs"]}>
-                        <h1>Lastest Blog here</h1>
-
-                        <h1>Trending Blog here</h1>
+                        <>
+                            {
+                                blogs == null ? <Loader /> :
+                                blogs.map((blog, i) => {
+                                    return (
+                                        <BlogPostCard content={blog} author={blog.author.personal_info}/>
+                                    )
+                                })
+                            }
+                        </>
                     </InPageNavigation>
                 </div>
 
