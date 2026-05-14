@@ -8,7 +8,6 @@ class UserController {
 
             // Bổ sung bắt lỗi logic: Nếu database trả về null (không tìm thấy)
             if (!user) {
-                // Có thể tạo một object Error và gán statusCode 404 để Global Error Handler bắt
                 const err = new Error("User not found");
                 err.statusCode = 404;
                 throw err; 
