@@ -54,11 +54,11 @@ const Navbar = () => { // thanh công cụ
                         <i className="fi fi-rr-search text-2xl "></i>
                     </button>
 
-                    <Link className="btn-dark 2py" to="/signin">
+                    <Link className="btn-dark 2py" to="/login">
                         Sign in
                     </Link>
 
-                    <Link className="btn-light 2py" to="/signup">
+                    <Link className="btn-light 2py" to="/register">
                         Sign up
                     </Link>
                 </div>
