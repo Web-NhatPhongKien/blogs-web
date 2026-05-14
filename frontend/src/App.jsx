@@ -4,6 +4,7 @@ import HomePage from "./pages/home.page";
 import SearchPage from "./pages/search";
 import PageNotFound from "./pages/404";
 import ProfilePage from "./pages/profile";
+import Editor from "./components/editor.pages";
 import Register from './pages/register.page';
 import Login from './pages/login.page';
 import Dashboard from './pages/dashboard.page';
@@ -12,6 +13,7 @@ import ProtectedRoute from './routes/protected.route';
 const App = () => {
     return (
         <Routes>
+            <Route path="/editor" element={<Editor />}/>
             <Route path="/" element={<Navbar />} >
                 <Route index element={<HomePage />} />
                 <Route path='/register' element={<Register />}/>
