@@ -1,10 +1,23 @@
 import { useState } from "react";
 import logo from "../imgs/logo.png";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom"; // useNavigate ĐƯỢC THÊM TỪ PART 3
 
 const Navbar = () => { // thanh công cụ 
 
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false)
+
+    // ==== BẮT ĐẦU PHẦN THÊM VÀO TỪ PART 3 ====
+    let navigate = useNavigate();
+
+    // Hàm xử lý tìm kiếm khi người dùng nhấn Enter [1, 2]
+    const handleSearch = (e) => {
+        let query = e.target.value;
+        // Kiểm tra nếu phím nhấn là Enter (keyCode 13) và ô input không bị trống [2]
+        if (e.keyCode === 13 && query.length) {
+            navigate(`/search/${query}`); // Điều hướng người dùng tới trang tìm kiếm [2]
+        }
+    };
+    // ==== KẾT THÚC PHẦN THÊM TỪ PART 3 ====
 
     return (
         <>
@@ -24,6 +37,7 @@ const Navbar = () => { // thanh công cụ
                         placeholder="Search"
                         className="w-full md:w-auto bg-grey p-4 pl-6 pr-[12%]
                     md:pr-6 rounded-full placeholder:text-dark-grey md:pl-12"
+                        onKeyDown={handleSearch} /* ==== THÊM SỰ KIỆN onKeyDown TỪ PART 3 ==== [1] */
                     />
 
                     <i className="fi fi-rr-search absolute right-[10%]
@@ -40,11 +54,11 @@ const Navbar = () => { // thanh công cụ
                         <i className="fi fi-rr-search text-2xl "></i>
                     </button>
 
-                    <Link className="btn-dark 2py" to="/signin">
+                    <Link className="btn-dark 2py" to="/login">
                         Sign in
                     </Link>
 
-                    <Link className="btn-light 2py" to="/signup">
+                    <Link className="btn-light 2py" to="/register">
                         Sign up
                     </Link>
                 </div>

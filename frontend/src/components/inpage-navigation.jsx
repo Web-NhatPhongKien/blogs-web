@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
+export let activeTabLineRef;
+export let activeTabRef;
+
 const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, children }) => {
-    let activeTabLineRef = useRef();
-    let activeTabRef = useRef();
+    activeTabLineRef = useRef();
+    activeTabRef = useRef();
 
     let [ inPageNavIndex, setInPageNavIndex ] = useState(defaultActiveIndex);
 
@@ -34,14 +37,17 @@ const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, 
                             onClick={(e) => { changePageState(e.target, i) }}>
                                 { route }
                             </button>
-                        )
+                        );
                     })
                 }
 
                 <hr ref={activeTabLineRef} className="absolute bottom-0 duration-300"/>
             </div>
 
-            { Array.isArray(children) ? children[inPageNavIndex] : children}
+            {/* Khu vực hiển thị nội dung (Children) */}
+            {
+                Array.isArray(children) ? children[inPageNavIndex] : children
+            }
         </>
     )
 }
