@@ -1,11 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
-import UserAuthForm from "./pages/userAuthForm";
 import HomePage from "./pages/home.page";
 import SearchPage from "./pages/search";
 import PageNotFound from "./pages/404";
 import ProfilePage from "./pages/profile";
 import Editor from "./components/editor.pages";
+import Register from './pages/register.page';
+import Login from './pages/login.page';
+import Dashboard from './pages/dashboard.page';
+import ProtectedRoute from './routes/protected.route';
 
 const App = () => {
     return (
@@ -13,13 +16,19 @@ const App = () => {
             <Route path="/editor" element={<Editor />}/>
             <Route path="/" element={<Navbar />} >
                 <Route index element={<HomePage />} />
-                <Route path="signin" element={<UserAuthForm type="sign-in"/>}/>
-                <Route path="signup" element={<UserAuthForm type="sign-up"/>}/>
+                <Route path='/register' element={<Register />}/>
+                <Route path='/login' element={<Login />}/>
+                <Route path='/dashboard' element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="search/:query" element={<SearchPage />} />
                 <Route path="user/:id" element={<ProfilePage />} />
                 <Route path="*" element={<PageNotFound />} />
             </Route>
-            
+
         </Routes>
     );
 }
