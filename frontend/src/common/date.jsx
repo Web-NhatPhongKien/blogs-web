@@ -6,3 +6,9 @@ export const getDay = (timestamp) => {
 
     return `${date.getDate()} ${months[date.getMonth()]}`;
 }
+
+// Hàm lấy Ngày, Tháng và Năm
+export const getFullDay = (timestamp) => {
+    let date = new Date(timestamp);
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
