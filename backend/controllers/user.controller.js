@@ -1,0 +1,53 @@
+import UserService from "../services/user.service.js";
+
+class UserController {
+    getProfile = async (req, res, next) => {
+        try {
+            const { username } = req.body;
+            const user = await UserService.getUserProfileService(username);
+
+            // Bổ sung bắt lỗi logic: Nếu database trả về null (không tìm thấy)
+            if (!user) {
+                // Có thể tạo một object Error và gán statusCode 404 để Global Error Handler bắt
+                const err = new Error("User not found");
+                err.statusCode = 404;
+                throw err; 
+            }
+
+            return res.status(200).json(user);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    searchUsers = async (req, res, next) => {
+        try {
+            const { query } = req.body;
+            const users = await UserService.searchUsersService(query);
+            return res.status(200).json({ users });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    getBlog = async (req, res, next) => {
+        try {
+            const { blog_id, draft, mode } = req.body;
+            
+            const blog = await getBlogService(blog_id, mode);
+
+            // Bắt lỗi nếu client gửi sai blog_id
+            if (!blog) {
+                const err = new Error("Blog not found");
+                err.statusCode = 404;
+                throw err;
+            }
+
+            return res.status(200).json({ blog });
+        } catch (err) {
+            next(err);
+        }
+    }
+}
+
+export default new UserController();
