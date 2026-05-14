@@ -5,10 +5,12 @@ import HomePage from "./pages/home.page";
 import SearchPage from "./pages/search";
 import PageNotFound from "./pages/404";
 import ProfilePage from "./pages/profile";
+import Editor from "./components/editor.pages";
 
 const App = () => {
     return (
         <Routes>
+            <Route path="/editor" element={<Editor />}/>
             <Route path="/" element={<Navbar />} >
                 <Route index element={<HomePage />} />
                 <Route path="signin" element={<UserAuthForm type="sign-in"/>}/>

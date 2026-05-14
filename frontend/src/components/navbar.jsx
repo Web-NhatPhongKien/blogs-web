@@ -54,6 +54,10 @@ const Navbar = () => { // thanh công cụ
                         <i className="fi fi-rr-search text-2xl "></i>
                     </button>
 
+                    <Link to='/editor' className="flex md:flex gap-2 link">
+                    <i className="fi fi-sr-pencil"></i>
+                    </Link>
+                    
                     <Link className="btn-dark 2py" to="/signin">
                         Sign in
                     </Link>
