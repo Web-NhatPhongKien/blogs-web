@@ -2,7 +2,7 @@ import { required } from "joi";
 import mongoose, { Schema } from "mongoose";
 
 const blogSchema = new Schema({
-    blog_ud: {
+    blog_id: {
         type: String,
         required: true,
         unique: true
