@@ -1,17 +1,16 @@
 import logo from "../imgs/logo.png";
 import { Link } from "react-router-dom";
-import dfBanner from "../imgs/dfBanner.png"
+import dfBanner from "../imgs/dfBanner.png";
 import React, { useState } from "react";
-const BlogEditor = ()=>{
+
+const BlogEditor = () => {
     const [banner, setBanner] = useState(dfBanner);
     const [title, setTitle] = useState("");
 
     const handleImg = async (e) => {
         let file = e.target.files[0];
-
         if (file) {
             setBanner(URL.createObjectURL(file));
-
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "mn9huksh");
@@ -22,81 +21,59 @@ const BlogEditor = ()=>{
                     method: "POST",
                     body: formData
                 });
-
                 const data = await res.json();
-                
                 if(data.url) {
                     console.log("Upload thành công!", data.url);
                 }
-
             } catch (err) {
                 console.error("Lỗi khi kết nối Cloudinary:", err);
             }
         }
-    }
-    const handleKeyDown = (e)=>{
-        if(e.keyCode === 13) {
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
             e.preventDefault();
         }
-    }
+    };
 
     const handleTitleChange = (e) => {
         let input = e.target;
         input.style.height = 'auto';
         input.style.height = input.scrollHeight + "px";
-    }
+        setTitle(input.value);
+    };
 
-    return(
+    return (
         <>
             <nav className="navbar gap-4">
-                <Link to="/" className="flex-none w-10 ">
-                    <img src={logo} className="w-full" />
+                <Link to="/" className="flex-none w-10">
+                    <img src={logo} className="w-full" alt="logo" />
                 </Link>
                 <p>New Blog</p>
-                <div className="flex gap-4 ml-auto ">
-                    <button className="btn-dark px-4 py-2 text-sm">
-                        Publish
-                    </button>
-                    <button className="btn-light px-4 py-2 text-smm">
-                        Save Draft
-                    </button>
+                <div className="flex gap-4 ml-auto">
+                    <button className="btn-dark px-4 py-2 text-sm">Publish</button>
+                    <button className="btn-light px-4 py-2 text-sm">Save Draft</button>
                 </div>
             </nav>
             <section>
-                <div className=" mx-auto w-full">
-                    
+                <div className="mx-auto max-w-[900px] w-full">
                     <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-100 rounded overflow-hidden cursor-pointer">
                         <label htmlFor="uploadBanner" className="cursor-pointer">
-                        
-                            <img 
-                                src={banner} 
-                                alt="banner" 
-                                className="w-full h-full object-cover" 
-                            />
-
-                            <input 
-                                id="uploadBanner"
-                                type="file"
-                                accept=".png, .jpg, .jpeg"
-                                hidden 
-                                onChange={handleImg} 
-                            />
+                            <img src={banner} className="w-full h-full object-cover" alt="banner" />
+                            <input id="uploadBanner" type="file" accept=".png, .jpg, .jpeg" hidden onChange={handleImg} />
                         </label>
                     </div>
-
                     <textarea 
-                    placeholder="Blog Title"
-                    className="text-4xl font-medium w-full h-20
-                    outline-none resize-none mt-10 leading-tight"
-                    onKeyDown={handleKeyDown}
-                    onChange={handleTitleChange}
-                    >
-                    </textarea>
-
+                        placeholder="Blog Title" 
+                        className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight"
+                        onKeyDown={handleKeyDown}
+                        onChange={handleTitleChange}
+                    ></textarea>
                 </div>
-                
             </section>
-        </>    
-    )
-}
- export default BlogEditor;
+        </>
+    );
+};
+
+export default BlogEditor;

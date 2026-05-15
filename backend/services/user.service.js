@@ -1,4 +1,4 @@
-import User from "../schemas/user.js";
+import User from "../schemas/user.schema.js";
 
 class UserService {
     getUserProfileService = async (username) => {

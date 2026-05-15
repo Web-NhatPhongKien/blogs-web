@@ -6,61 +6,64 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] =
-    useState({
-      username: '',
-      email: '',
-      password: '',
-    });
+    useState({ username: '', email: '', password: '' });
+
+
+  const handleChange = (e) => {
+    setForm({ ...form, username: e.target.value, });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    await API.post(
-      '/register',
-      form
-    );
-
+    await API.post('/register', form);
     alert('Register success');
     navigate('/login');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Register</h1>
+    <section className="auth-section">
+      <form onSubmit={handleSubmit} className="auth-form">
+        <h1 className="auth-title">Join with us</h1>
 
-      <input
-        placeholder='username'
-        onChange={(e) =>
-          setForm({
-            ...form,
-            username: e.target.value,
-          })
-        }
-      />
+        <div className="input-group">
+          <input
+            name="username"
+            type="String"
+            placeholder="Username"
+            className="input-box"
+            onChange={handleChange}
+          />
+          <i className="fi fi-rr-user input-icon"></i>
+        </div>
 
-      <input
-        placeholder='email'
-        onChange={(e) =>
-          setForm({
-            ...form,
-            email: e.target.value,
-          })
-        }
-      />
+        <div className="input-group">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="input-box"
+            onChange={handleChange}
+          />
+          <i className="fi fi-rr-envelope input-icon"></i> {/* Icon email [10] */}
+        </div>
 
-      <input
-        type='password'
-        placeholder='password'
-        onChange={(e) =>
-          setForm({
-            ...form,
-            password:
-              e.target.value,
-          })
-        }
-      />
+        <div className="input-group">
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="input-box"
+            onChange={handleChange}
+          />
+          <i className="fi fi-rr-key input-icon"></i> {/* Icon chìa khóa [10] */}
+        </div>
 
-      <button>Register</button>
-    </form>
+        <button className="btn-dark" type="submit">Sign Up</button>
+        <p className="auth-link">
+          You have an account ?
+          <a href="/login">Welcome back</a>
+        </p>
+      </form>
+    </section>
   );
 }

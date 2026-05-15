@@ -1,23 +1,32 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Blogseditor from "./blog.editor";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import BlogEditor from "./blog.editor";
 
 const Editor = () => {
-
+    const [editorState, setEditorState] = useState("editor"); 
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-
         const access_token = localStorage.getItem("token");
 
         if (!access_token) {
-            navigate("/signin");
+            return navigate("/signin");
         }
 
-    }, []);
+        setLoading(false);
+    }, [navigate]);
 
     return (
-        <Blogseditor/>
+        <>
+            {
+                loading ? <p className="text-center mt-20">Loading...</p> :
+                editorState === "editor" ? 
+                    <BlogEditor setEditorState={setEditorState} /> 
+                : 
+                    <PublishForm setEditorState={setEditorState} />
+            }
+        </>
     )
 }
 
