@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
-import { register, signin } from "./controllers/auth.controller.js";
-import { registerSchema, signinSchema } from "./schemas/auth.validate.js";
+import { register, login } from "./controllers/auth.controller.js";
+import { registerSchema, signinSchema } from "./validates/auth.validate.js";
 import BlogController from "./controllers/blog.controller.js";
 import UserController from "./controllers/user.controller.js";
 

@@ -4,55 +4,55 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth.context';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
-  const [form, setForm] =
-    useState({
-      email: '',
-      password: '',
-    });
+    const [form, setForm] = useState({ email: '', password: '' });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const res = await API.post(
-      '/login',
-      form
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const res = await API.post('/login', form);
+        login(res.data);
+        navigate('/dashboard');
+    };
+
+    return (
+        <section className="auth-section">
+            <form onSubmit={handleSubmit} className="auth-form">
+                <h1 className="auth-title">Welcome back</h1>
+
+                <div className="input-group">
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Email"
+                        className="input-box"
+                        onChange={handleChange}
+                    />
+                    <i className="fi fi-rr-envelope input-icon"></i> {/* Icon email [10] */}
+                </div>
+
+                <div className="input-group">
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        className="input-box"
+                        onChange={handleChange}
+                    />
+                    <i className="fi fi-rr-key input-icon"></i> {/* Icon chìa khóa [10] */}
+                </div>
+
+                <button className="btn-dark" type="submit">Sign In</button>
+                <p className="auth-link">
+                    Don't you have an account ?
+                    <a href="/register">Join us today</a>
+                </p>
+            </form>
+        </section>
     );
-
-    login(res.data);
-
-    navigate('/dashboard');
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <h1>Login</h1>
-
-      <input
-        placeholder='email'
-        onChange={(e) =>
-          setForm({
-            ...form,
-            email: e.target.value,
-          })
-        }
-      />
-
-      <input
-        type='password'
-        placeholder='password'
-        onChange={(e) =>
-          setForm({
-            ...form,
-            password:
-              e.target.value,
-          })
-        }
-      />
-
-      <button>Login</button>
-    </form>
-  );
 }
