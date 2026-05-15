@@ -17,8 +17,8 @@ export default function Login() {
         e.preventDefault();
         const res = await API.post('/login', form);
         const token = res.data.token;
-        if(res.data.access_token) {
-                localStorage.setItem("token", res.data.access_token);
+        if(res.data.token) {
+                localStorage.setItem("token", res.data.token);
             }
         login(res.data);
         navigate('/dashboard');
