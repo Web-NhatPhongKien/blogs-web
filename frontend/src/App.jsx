@@ -9,18 +9,25 @@ import Register from './pages/register.page';
 import Login from './pages/login.page';
 import Dashboard from './pages/dashboard.page';
 import ProtectedRoute from './routes/protected.route';
+import Profile from "./pages/profile.page";
 
 const App = () => {
     return (
         <Routes>
-            <Route path="/editor" element={<Editor />}/>
+            <Route path="/editor" element={<Editor />} />
             <Route path="/" element={<Navbar />} >
                 <Route index element={<HomePage />} />
-                <Route path='/register' element={<Register />}/>
-                <Route path='/login' element={<Login />}/>
+                <Route path='/register' element={<Register />} />
+                <Route path='/login' element={<Login />} />
                 <Route path='/dashboard' element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+                />
+                <Route path="/profile" element={
                         <ProtectedRoute>
-                            <Dashboard />
+                            <Profile />
                         </ProtectedRoute>
                     }
                 />
