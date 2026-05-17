@@ -3,5 +3,4 @@ const PublishForm = () => {
         <div>Trang đăng bài</div>
     );
 }
-
 export default PublishForm;
