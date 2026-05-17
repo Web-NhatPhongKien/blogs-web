@@ -16,7 +16,6 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const res = await API.post('/login', form);
-        console.log(res.data);
         login(res.data);
         navigate('/dashboard');
     };
