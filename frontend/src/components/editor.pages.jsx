@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import BlogEditor from "./blog.editor";
 import userSchema from "../../../backend/schemas/user.schema";
 import PublishForm from "../components/publish-form"
+import { useAuth } from "../context/auth.context";
 
 const blogStructure = {
     title:'',
