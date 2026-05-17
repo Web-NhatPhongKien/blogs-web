@@ -30,7 +30,6 @@ class BlogService {
             findQuery.author = author;
         }
 
-        // Tính toán số lượng document cần bỏ qua cho tính năng phân trang
         const skipDocs = (page - 1) * limit;
 
         // Trực tiếp trả về Promise
@@ -43,13 +42,11 @@ class BlogService {
     }
 
     getBlogService = async (blog_id, mode) => {
-        // Tránh tăng lượt view khi tác giả đang vào chế độ edit
+
         const incrementVal = mode !== 'edit' ? 1 : 0; 
         
-        // Xây dựng điều kiện tìm kiếm
         const findQuery = { blog_id };
-        // Nếu client request yêu cầu lấy bài draft (thường là chế độ edit), thì không cần giới hạn
-        // Ngược lại, nếu chế độ đọc bình thường, chỉ lấy bài viết đã public (draft: false)
+
         if (draft !== 'true') {
             findQuery.draft = false;
         }

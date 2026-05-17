@@ -29,10 +29,8 @@ class BlogController {
 
     searchBlogs = async (req, res, next) => {
         try {
-            // Lấy toàn bộ tham số từ body
             const { tag, query, author, page, limit, eliminate_blog } = req.body;
 
-            // Gọi service và truyền dữ liệu xuống dưới dạng 1 object
             const blogs = await BlogService.searchBlogsService({
                 tag, 
                 query, 
@@ -44,7 +42,6 @@ class BlogController {
 
             return res.status(200).json({ blogs });
         } catch (err) {
-            // Có lỗi (như sai định dạng RegExp, rớt mạng DB...) thì đẩy đi
             next(err);
         }
     }
