@@ -6,7 +6,6 @@ class UserController {
             const { username } = req.body;
             const user = await UserService.getUserProfileService(username);
 
-            // Bổ sung bắt lỗi logic: Nếu database trả về null (không tìm thấy)
             if (!user) {
                 const err = new Error("User not found");
                 err.statusCode = 404;
@@ -35,7 +34,7 @@ class UserController {
             
             const blog = await getBlogService(blog_id, mode);
 
-            // Bắt lỗi nếu client gửi sai blog_id
+
             if (!blog) {
                 const err = new Error("Blog not found");
                 err.statusCode = 404;

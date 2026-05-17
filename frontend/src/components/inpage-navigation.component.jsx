@@ -24,16 +24,15 @@ const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, 
 
     return (
         <>
-            <div className="relative mb-8 bg-white border-b border-grey flex flex-nowrap overflow-x-auto">
-
+            <div className="inpage-nav">
                 {
                     routes.map((route, i) => {
                         return (
                             <button 
                             ref={ i == defaultActiveIndex ? activeTabRef : null }
                             key={i} 
-                            className={"p-4 px-5 capitalize " + ( inPageNavIndex == i ? "text-black" : "text-dark-grey") +
-                                ( defaultHidden.includes(route) ? " md:hidden " : "  " )}
+                            className={"inpage-nav-btn " + (inPageNavIndex == i ? "active" : "") + 
+                                (defaultHidden.includes(route) ? " hide-on-desktop" : "") }
                             onClick={(e) => { changePageState(e.target, i) }}>
                                 { route }
                             </button>
@@ -41,7 +40,7 @@ const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, 
                     })
                 }
 
-                <hr ref={activeTabLineRef} className="absolute bottom-0 duration-300"/>
+                <hr ref={activeTabLineRef} className="inpage-nav-line"/>
             </div>
 
             {/* Khu vực hiển thị nội dung (Children) */}

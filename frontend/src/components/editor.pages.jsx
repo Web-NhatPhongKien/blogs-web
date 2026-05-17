@@ -1,20 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BlogEditor from "./blog.editor";
-import userSchema from "../../../backend/schemas/user.schema";
-import PublishForm from "../components/publish-form"
 import { useAuth } from "../context/auth.context";
-
-const blogStructure = {
-    title:'',
-    banner: '',
-    content: [],
-    tags: [],
-    des: '',
-    author: {userSchema:{}}
-}
-
-export const editorContext = createContext({});
 
 const Editor = () => {
     const [blog, setBlog] = useState(blogStructure)
@@ -30,7 +17,7 @@ const Editor = () => {
         }
 
         setLoading(false);
-    }, [user,navigate]);
+    }, [user, navigate]);
 
     return (
         <>

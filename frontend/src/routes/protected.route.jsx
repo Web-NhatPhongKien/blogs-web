@@ -1,16 +1,14 @@
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/auth.context';
 
 export default function ProtectedRoute({
   children,
 }) {
-  const token =
-    sessionStorage.getItem(
-      'token'
-    );
+  const user = useAuth();
 
-  return token ? (
+  return user ? (
     children
   ) : (
-    <Navigate to='/login' />
+    <Navigate to='/login' replace/>
   );
 }

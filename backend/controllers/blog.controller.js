@@ -42,7 +42,6 @@ class BlogController {
 
             return res.status(200).json({ blogs });
         } catch (err) {
-            // Có lỗi (như sai định dạng RegExp, rớt mạng DB...) thì đẩy đi
             next(err);
         }
     }
