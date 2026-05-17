@@ -1,14 +1,37 @@
 import logo from "../imgs/logo.png";
 import { Link } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
-import React, { useContext, useState } from "react";
-import { editorContext } from "./editor.pages";
+import React, { useContext, useEffect, useState,useRef } from "react";
+import Editor, { editorContext } from "./editor.pages";
+import EditorJS from "@editorjs/editorjs";
 
 const BlogEditor = () => {
     const { blog, setBlog } = useContext(editorContext);
     const { title, banner, content, tags, des } = blog;
+    const textEditorRef = useRef(null);
+    
+    useEffect(() =>{
+        if (!textEditorRef.current) {
+            textEditorRef.current = new EditorJS({
+                holder: "textEditor", 
+                placeholder: "Hãy viết nội dung ",
+                data: Array.isArray(blog.content) ? { blocks: blog.content } : blog.content, 
+                onChange: async () => {
+                    if (textEditorRef.current && textEditorRef.current.save) {
+                        const contentData = await textEditorRef.current.save();
+                        setBlog(prev => ({ ...prev, content: contentData }));
+                    }
+                }
+            });
+        }
 
-
+        return () => {
+            if (textEditorRef.current && typeof textEditorRef.current.destroy === 'function') {
+                textEditorRef.current.destroy();
+                textEditorRef.current = null;
+            }
+        };
+    },[])
     const handleImg = async (e) => {
         let file = e.target.files[0];
         if (file) {
@@ -75,6 +98,13 @@ const BlogEditor = () => {
                         onKeyDown={handleKeyDown}
                         onChange={handleTitleChange}
                     ></textarea>
+
+                <hr className="w-full opacity-20 my-2"/>
+
+                <div id="textEditor" className="font-gelasio">
+
+                </div>
+
                 </div>
             </section>
         </>
