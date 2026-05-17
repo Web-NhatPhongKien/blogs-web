@@ -75,6 +75,13 @@ const BlogEditor = () => {
                         onKeyDown={handleKeyDown}
                         onChange={handleTitleChange}
                     ></textarea>
+
+                <hr className="w-full opacity-20 my-2"/>
+
+                <div id="textEditor" className="font-gelasio">
+
+                </div>
+
                 </div>
             </section>
         </>
