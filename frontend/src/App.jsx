@@ -2,9 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import UserAuthForm from "./pages/userAuthForm";
 import HomePage from "./pages/home.page";
-import SearchPage from "./pages/search";
-import PageNotFound from "./pages/404";
-import ProfilePage from "./pages/profile";
+import SearchPage from "./pages/search.page";
+import PageNotFound from "./pages/404.page";
+import ProfilePage from "./pages/profile.page";
 
 const App = () => {
     return (
