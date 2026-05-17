@@ -1,6 +1,7 @@
 import { useState } from "react";
 import logo from "../imgs/logo.png";
 import { Link, Outlet, useNavigate } from "react-router-dom"; // useNavigate ĐƯỢC THÊM TỪ PART 3
+import { useAuth } from "../context/auth.context";
 
 const Navbar = () => { // thanh công cụ 
 
@@ -8,6 +9,8 @@ const Navbar = () => { // thanh công cụ
 
     // ==== BẮT ĐẦU PHẦN THÊM VÀO TỪ PART 3 ====
     let navigate = useNavigate();
+
+    const {user} = useAuth();
 
     // Hàm xử lý tìm kiếm khi người dùng nhấn Enter [1, 2]
     const handleSearch = (e) => {
@@ -55,16 +58,36 @@ const Navbar = () => { // thanh công cụ
                     </button>
 
                     <Link to='/editor' className="flex md:flex gap-2 link">
-                    <i className="fi fi-sr-pencil">Click to edit</i>
-                    </Link>
-                  
-                    <Link className="btn-dark 2py" to="/login">
-                        Sign in
+                        <i className="fi fi-sr-pencil">Click to edit</i>
                     </Link>
 
-                    <Link className="btn-light 2py" to="/register">
-                        Sign up
-                    </Link>
+                    {user ? (
+                        <Link
+                            to="/profile"
+                            className="w-12 h-12
+                                        rounded-full border
+                                        flex items-center
+                                        justify-center"
+                        >
+                            <i className="fi fi-rr-user"></i>
+                        </Link>
+                    ) : (
+                        <>
+                            <Link
+                                className="btn-dark"
+                                to="/login"
+                            >
+                                Sign in
+                            </Link>
+
+                            <Link
+                                className="btn-light"
+                                to="/register"
+                            >
+                                Sign up
+                            </Link>
+                        </>
+                    )}
                 </div>
 
             </nav>

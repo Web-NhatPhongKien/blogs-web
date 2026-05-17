@@ -1,24 +1,29 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState, } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({
-  children,
-}) => {
+export const AuthProvider = ({ children, }) => {
   const [user, setUser] =
     useState(null);
 
   useEffect(() => {
+
     const savedUser =
       sessionStorage.getItem('user');
-
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    try {
+      if (savedUser && savedUser !== 'undefined') {
+        setUser(JSON.parse(savedUser));
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
+      sessionStorage.removeItem(
+        'user'
+      );
+      sessionStorage.removeItem(
+        'token'
+      );
     }
   }, []);
 
@@ -38,14 +43,8 @@ export const AuthProvider = ({
 
   const logout = () => {
     setUser(null);
-
-    sessionStorage.removeItem(
-      'user'
-    );
-
-    sessionStorage.removeItem(
-      'token'
-    );
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
   };
 
   return (

@@ -10,7 +10,7 @@ export default function Register() {
 
 
   const handleChange = (e) => {
-    setForm({ ...form, username: e.target.value, });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -28,7 +28,7 @@ export default function Register() {
         <div className="input-group">
           <input
             name="username"
-            type="String"
+            type="text"
             placeholder="Username"
             className="input-box"
             onChange={handleChange}
