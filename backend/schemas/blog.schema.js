@@ -1,4 +1,3 @@
-import { required } from "joi";
 import mongoose, { Schema } from "mongoose";
 
 const blogSchema = new Schema({
@@ -52,8 +51,19 @@ const blogSchema = new Schema({
         }
     },
     comments: {
-        
+        type: [Schema.Types.ObjectId],
+        ref: 'comments'
+    },
+    draft: {
+        type: Boolean,
+        default: false
     }
+},
+{ 
+    timestamps: {
+        createdAt: 'publishedAt'
+    } 
+
 })
 
 export default mongoose.model("blogs", blogSchema);
