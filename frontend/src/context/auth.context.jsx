@@ -28,7 +28,7 @@ export const AuthProvider = ({ children, }) => {
   }, []);
 
   const login = (data) => {
-    setUser(data.user);
+    setUser(data.user); 
 
     sessionStorage.setItem(
       'user',
@@ -39,6 +39,7 @@ export const AuthProvider = ({ children, }) => {
       'token',
       data.token
     );
+    console.log(data.user);
   };
 
   const logout = () => {
