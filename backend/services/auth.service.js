@@ -1,32 +1,53 @@
-import User from "../schemas/user.js";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
+import User from '../schemas/user.schema.js';
+import { generateToken } from '../utils/jwt.js';
 
 export const registerService = async (data) => {
-  const { fullname, email, password, username } = data;
-
-  const exist = await User.findOne({ "personal_info.email": email });
-  if (exist) throw new Error("Email already exists");
-
-  const hash = await bcrypt.hash(password, 10);
-
-  return await User.create({
-    personal_info: {
-      fullname,
-      email,
-      password: hash,
-      username
-    }
+  const existingUser = await User.findOne({
+    email: data.email,
   });
-};
 
-export const signinService = async (data) => {
-  const { email, password } = data;
+  if (existingUser) {
+    throw new Error('Email already exists');
+  }
 
-  const user = await User.findOne({ "personal_info.email": email });
-  if (!user) throw new Error("User not found");
+  const hashedPassword = await bcrypt.hash(
+    data.password,
+    10
+  );
 
-  const isMatch = await bcrypt.compare(password, user.personal_info.password);
-  if (!isMatch) throw new Error("Wrong password");
+  const user = await User.create({
+    username: data.username,
+    email: data.email,
+    password: hashedPassword,
+  });
 
   return user;
+};
+
+export const loginService = async ({
+  email,
+  password,
+}) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const isMatch = await bcrypt.compare(
+    password,
+    user.password
+  );
+
+  if (!isMatch) {
+    throw new Error('Wrong password');
+  }
+
+  const token = generateToken(user);
+
+  return {
+    token,
+    user,
+  };
 };

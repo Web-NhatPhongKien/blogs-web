@@ -1,24 +1,41 @@
-import { registerService, signinService } from "../services/auth.service.js";
-import { signToken } from "../utils/jwt.js";
+import {
+  registerService,
+  loginService,
+} from '../services/auth.service.js';
 
-export const register = async (req, res) => {
+export const register = async (
+  req,
+  res
+) => {
   try {
-    const user = await registerService(req.body);
-    const token = signToken({ id: user._id });
+    const user = await registerService(
+      req.body
+    );
 
-    res.json({ message: "Register success", token });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(201).json({
+      message: 'Register success',
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    });
   }
 };
 
-export const signin = async (req, res) => {
+export const login = async (
+  req,
+  res
+) => {
   try {
-    const user = await signinService(req.body);
-    const token = signToken({ id: user._id });
+    const data = await loginService(
+      req.body
+    );
 
-    res.json({ message: "Login success", token });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    });
   }
 };
