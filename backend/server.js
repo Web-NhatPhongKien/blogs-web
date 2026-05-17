@@ -1,36 +1,29 @@
-import express from 'express'
-import mongoose from 'mongoose'
-import 'dotenv/config'
-import morgan from 'morgan'
+import dotenv from "dotenv";
 
-import { register, signin } from "./controllers/auth.controller.js";
-import { registerSchema, signinSchema } from "./schemas/auth.validate.js";
+import { register, login } from "./controllers/auth.controller.js";
+import { registerSchema, signinSchema } from "./validates/auth.validate.js";
 import BlogController from "./controllers/blog.controller.js";
 import UserController from "./controllers/user.controller.js";
 
+dotenv.config();
+
+import express from 'express';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import cors from 'cors';
+
+import authRoutes from './routes/auth.route.js';
+
 const server = express();
-let PORT = 3000;
 
-server.use(express.json())
-server.use(morgan('dev'))
+server.use(cors());
+server.use(express.json());
+server.use(morgan('dev'));
 
-mongoose.connect("mongodb://localhost:27017/")
-.then(
-    () => console.log("DB connected")
-).catch(e => 
-    console.error(e.messsage)
-)
-
-// middleware validate
-const validate = (schema) => (req, res, next) => {
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).json({ error: error.message });
-  next();
-};
-
-// routes
-server.post("/signup", validate(registerSchema), register);
-server.post("/signin", validate(signinSchema), signin);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log('DB connected'))
+  .catch((e) => console.error(e.message));
 
 server.get("/latest-blogs", BlogController.getLatestBlogs);
 server.get("/trending-blogs", BlogController.getTrendingBlogs);
@@ -40,7 +33,10 @@ server.post("/get-blog", UserController.getBlog);
 server.post("/get-profile", UserController.getProfile);
 server.post("/search-users", UserController.searchUsers);
 
-server.listen(PORT, () => {
-    console.log('listening on port ' + PORT);
-})
+  //routes
+server.use('/api/auth', authRoutes);
+
+server.listen(process.env.PORT, () => {
+  console.log('Listening on port ' + process.env.PORT);
+});
 
