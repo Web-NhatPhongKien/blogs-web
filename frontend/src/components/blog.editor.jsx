@@ -1,16 +1,19 @@
 import logo from "../imgs/logo.png";
 import { Link } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { editorContext } from "./editor.pages";
 
 const BlogEditor = () => {
-    const [banner, setBanner] = useState(dfBanner);
-    const [title, setTitle] = useState("");
+    const { blog, setBlog } = useContext(editorContext);
+    const { title, banner, content, tags, des } = blog;
+
 
     const handleImg = async (e) => {
         let file = e.target.files[0];
         if (file) {
-            setBanner(URL.createObjectURL(file));
+            const previewUrl = URL.createObjectURL(file);
+            setBlog({ ...blog, banner: previewUrl });
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", "mn9huksh");
@@ -22,8 +25,9 @@ const BlogEditor = () => {
                     body: formData
                 });
                 const data = await res.json();
-                if(data.url) {
-                    console.log("Upload thành công!", data.url);
+                if (data.secure_url) {
+                    setBlog({ ...blog, banner: data.secure_url });
+                    console.log("Upload thành công lên Cloudinary!", data.secure_url);
                 }
             } catch (err) {
                 console.error("Lỗi khi kết nối Cloudinary:", err);
@@ -41,7 +45,7 @@ const BlogEditor = () => {
         let input = e.target;
         input.style.height = 'auto';
         input.style.height = input.scrollHeight + "px";
-        setTitle(input.value);
+        setBlog({...blog, title: input.value})
     };
 
     return (
@@ -50,7 +54,7 @@ const BlogEditor = () => {
                 <Link to="/" className="flex-none w-10">
                     <img src={logo} className="w-full" alt="logo" />
                 </Link>
-                <p>New Blog</p>
+                <p className="line-clamp-1 w-full font-medium ml-4">{blog.title && blog.title.length ? blog.title : "New Blog"}</p>
                 <div className="flex gap-4 ml-auto">
                     <button className="btn-dark px-4 py-2 text-sm">Publish</button>
                     <button className="btn-light px-4 py-2 text-sm">Save Draft</button>
@@ -60,12 +64,13 @@ const BlogEditor = () => {
                 <div className="mx-auto max-w-[900px] w-full">
                     <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-100 rounded overflow-hidden cursor-pointer">
                         <label htmlFor="uploadBanner" className="cursor-pointer">
-                            <img src={banner} className="w-full h-full object-cover" alt="banner" />
+                            <img src={blog.banner || dfBanner} className="w-full h-full object-cover" alt="banner" />
                             <input id="uploadBanner" type="file" accept=".png, .jpg, .jpeg" hidden onChange={handleImg} />
                         </label>
                     </div>
                     <textarea 
                         placeholder="Blog Title" 
+                        value={blog.title}
                         className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight"
                         onKeyDown={handleKeyDown}
                         onChange={handleTitleChange}
