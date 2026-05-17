@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import HomePage from "./pages/home.page";
-import SearchPage from "./pages/search";
-import PageNotFound from "./pages/404";
-import ProfilePage from "./pages/profile";
+import SearchPage from "./pages/search.page";
+import PageNotFound from "./pages/404.page";
+import ProfilePage from "./pages/profile.page";
 import Editor from "./components/editor.pages";
 import Register from './pages/register.page';
 import Login from './pages/login.page';

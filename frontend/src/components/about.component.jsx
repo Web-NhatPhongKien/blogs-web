@@ -3,15 +3,14 @@ import { getFullDay } from "../common/date";
 
 const AboutUser = ({ className, bio, social_links, joinedAt }) => {
     return (
-        <div className={"md:w-[90%] md:mt-7 " + className}>
-            
-            {/* 1. Phần Tiểu sử (Bio) */}
-            <p className="text-xl leading-7">
+
+        <div className={"about-user " + className}>
+        
+            <p className="about-user-bio">
                 {bio.length ? bio : "Nothing to read here"}
             </p>
 
-            {/* 2. Phần Liên kết mạng xã hội (Social Links) */}
-            <div className="flex gap-x-7 gap-y-2 flex-wrap my-7 items-center text-dark-grey">
+            <div className="about-user-links">
                 {
                     Object.keys(social_links).map((key) => {
                         let link = social_links[key];
@@ -21,7 +20,7 @@ const AboutUser = ({ className, bio, social_links, joinedAt }) => {
                                 <i className={
                                     "fi " + 
                                     (key !== "website" ? "fi-brands-" + key : "fi-rr-globe") + 
-                                    " text-2xl hover:text-black"
+                                    " about-user-icon"
                                 }></i>
                             </Link>
                         ) : " ";
@@ -29,8 +28,7 @@ const AboutUser = ({ className, bio, social_links, joinedAt }) => {
                 }
             </div>
 
-            {/* 3. Phần Ngày tham gia (Joined Date) */}
-            <p className="text-xl leading-7 text-dark-grey">
+            <p className="about-user-joined">
                 Joined on {getFullDay(joinedAt)}
             </p>
 
