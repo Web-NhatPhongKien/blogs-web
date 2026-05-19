@@ -1,4 +1,6 @@
 const PublishForm = () => {
-    return ( <div>Publish Form</div> )
+    return (
+        <div>Trang đăng bài</div>
+    );
 }
-export default PublishForm; // Đặt ở cuối file
+export default PublishForm;
