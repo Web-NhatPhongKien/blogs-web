@@ -197,25 +197,6 @@
     background-color: #000;
 }
 
-.google-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    width: 100%;
-    background-color: #242424;
-    color: white;
-    padding: 0.7rem;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 1.5rem;
-}
-
-.google-btn img {
-    width: 20px;
-}
-
 .auth-link {
     text-align: center;
     color: #6b6b6b;
