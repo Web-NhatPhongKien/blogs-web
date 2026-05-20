@@ -1562,3 +1562,11 @@ input:disabled ~ .input-icon {
   }
 }
 
+#textEditor .image-tool__caption,
+#textEditor [contenteditable].image-tool__caption {
+    display: block !important;  
+    clear: both !important; 
+    position: relative !important; 
+    padding: 10px 0 !important;
+    width: 100% !important;
+}
