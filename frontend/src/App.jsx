@@ -10,6 +10,7 @@ import Login from './pages/login.page';
 import Dashboard from './pages/dashboard.page';
 import ProtectedRoute from './routes/protected.route';
 import Profile from "./pages/profile.page";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
     return (
