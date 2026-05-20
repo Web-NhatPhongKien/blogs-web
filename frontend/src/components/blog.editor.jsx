@@ -18,7 +18,7 @@ const BlogEditor = () => {
         if (editorInstanceRef.current) return;
         let editor = new EditorJS({
             holder:"textEditor",
-            data:{},
+            data: content,
             placeholder:"Let's write an awesome story",
             tools: tools
         });
@@ -108,7 +108,7 @@ const BlogEditor = () => {
                 </div>
             </nav>
             <section>
-                <div className="mx-auto max-w-[900px] w-full">
+                <div className="mx-auto max-w-[800px] w-full">
                     <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-100 rounded overflow-hidden cursor-pointer">
                         <label htmlFor="uploadBanner" className="cursor-pointer">
                             <img src={blog.banner || dfBanner} className="w-full h-full object-cover" alt="banner" />
