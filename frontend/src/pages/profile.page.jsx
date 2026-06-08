@@ -20,9 +20,9 @@ const Profile = () => {
                     <i className="fi fi-rr-user"></i>
                 </div>
 
-                <h2> {user.username} </h2>
+                <h2> {user.personal_info.username} </h2>
 
-                <p> {user.email} </p>
+                <p> {user.personal_info.email} </p>
 
                 <div className="profile-info">
 
