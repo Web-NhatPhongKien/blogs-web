@@ -1,11 +1,12 @@
 import Blog from "../schemas/blog.js";
 
 class BlogService {
-    getLatestBlogsService = async (limit = 10) => {
+    getLatestBlogsService = async (page, limit = 10) => {
         return await Blog.find({ draft: false })
             .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
             .sort({ publishedAt: -1 })
             .select("blog_id title des banner activity tags publishedAt -_id")
+            .skip((page - 1) * limit)
             .limit(limit);
     }
 
@@ -41,24 +42,45 @@ class BlogService {
             .limit(limit);
     }
 
-    getBlogService = async (blog_id, mode) => {
-
+    getBlogService = async (blog_id, draft, mode) => {
         const incrementVal = mode !== 'edit' ? 1 : 0; 
-        
+    
+        // 1. Xây dựng bộ lọc tìm kiếm
         const findQuery = { blog_id };
-
+        
+        // Nếu không phải tác giả đang edit, chỉ cho phép lấy bài đã public
         if (draft !== 'true') {
             findQuery.draft = false;
         }
         
+        // 2. Gọi DB bằng chính bộ lọc đã xây dựng
         return await Blog.findOneAndUpdate(
-            { blog_id }, 
+            findQuery, // SỬA LẠI Ở ĐÂY
             { $inc: { "activity.total_reads": incrementVal } },
-            { new: true } // Trả về document MỚI sau khi đã cập nhật lượt đọc
+            { new: true } 
         )
-        .populate("author", "personal_info.profile_image personal_info.username personal_info.fullname")
+        .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
         .select("title des content banner activity publishedAt blog_id tags");
     }
+
+    getAllLatestBlogsCountService = async () => {
+        return await Blog.countDocuments({ draft: false });
+    }
+
+    getSearchBlogsCountService = async ({ tag, query, author }) => {
+        // Khởi tạo điều kiện mặc định là chỉ lấy các bài đã public
+        let findQuery = { draft: false };
+
+        if (tag) {
+            findQuery.tags = tag;
+        } else if (query) {
+            findQuery.title = new RegExp(query, 'i');
+        } else if (author) {
+            findQuery.author = author;
+        }
+
+        return await Blog.countDocuments(findQuery);
+    };
 }
 
 export default new BlogService();

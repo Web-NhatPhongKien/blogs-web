@@ -1,36 +1,37 @@
 import logo from "../imgs/logo.png";
 import { Link } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
-import React, { useContext, useEffect, useState,useRef } from "react";
-import Editor, { editorContext } from "./editor.pages";
+import React, { useContext, useEffect,useRef } from "react";
+import { editorContext } from "./editor.pages";
 import EditorJS from "@editorjs/editorjs";
+import { tools } from "./tools.components";
+import { toast } from "react-hot-toast";
+
+
 
 const BlogEditor = () => {
-    const { blog, setBlog } = useContext(editorContext);
-    const { title, banner, content, tags, des } = blog;
+    let { blog, blog: { title, banner, content, tags, des }, setBlog, textEditor, setTextEditor, setEditorState } = useContext(editorContext);
     const textEditorRef = useRef(null);
-    
+    const editorInstanceRef = useRef(null);
+
     useEffect(() =>{
-        if (!textEditorRef.current) {
-            textEditorRef.current = new EditorJS({
-                holder: "textEditor", 
-                placeholder: "Hãy viết nội dung ",
-                data: Array.isArray(blog.content) ? { blocks: blog.content } : blog.content, 
-                onChange: async () => {
-                    if (textEditorRef.current && textEditorRef.current.save) {
-                        const contentData = await textEditorRef.current.save();
-                        setBlog(prev => ({ ...prev, content: contentData }));
-                    }
-                }
-            });
-        }
+        if (editorInstanceRef.current) return;
+        let editor = new EditorJS({
+            holder:"textEditor",
+            data: content,
+            placeholder:"Let's write an awesome story",
+            tools: tools
+        });
+        setTextEditor(editor);
+        editorInstanceRef.current = editor;
 
         return () => {
-            if (textEditorRef.current && typeof textEditorRef.current.destroy === 'function') {
-                textEditorRef.current.destroy();
-                textEditorRef.current = null;
+            if (editor && typeof editor.destroy === 'function') {
+                editor.destroy();
+                editorInstanceRef.current = null;
             }
         };
+
     },[])
     const handleImg = async (e) => {
         let file = e.target.files[0];
@@ -71,6 +72,29 @@ const BlogEditor = () => {
         setBlog({...blog, title: input.value})
     };
 
+    const handlePublishEvent = () => {
+        if (!blog.banner.length) {
+            return toast.error("Upload a blog banner to publish!");
+        }
+        if(!blog.title.length){
+            return toast.error("Write blog tilte to publish!");
+        }
+        if (textEditor.isReady) {
+            textEditor.save().then(data => {
+                if (data.blocks && data.blocks.length) {
+                
+                setBlog({ ...blog, content: data });
+                setEditorState("publish");
+                }
+                else {
+                return toast.error("Write something in your blog to publish it!");
+                }
+            })
+        .catch(err => {
+            console.log("error",err);
+        });
+        };
+    }
     return (
         <>
             <nav className="navbar gap-4">
@@ -79,12 +103,12 @@ const BlogEditor = () => {
                 </Link>
                 <p className="line-clamp-1 w-full font-medium ml-4">{blog.title && blog.title.length ? blog.title : "New Blog"}</p>
                 <div className="flex gap-4 ml-auto">
-                    <button className="btn-dark px-4 py-2 text-sm">Publish</button>
+                    <button className="btn-dark px-4 py-2 text-sm" onClick={handlePublishEvent}>Publish</button>
                     <button className="btn-light px-4 py-2 text-sm">Save Draft</button>
                 </div>
             </nav>
             <section>
-                <div className="mx-auto max-w-[900px] w-full">
+                <div className="mx-auto max-w-[800px] w-full">
                     <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-100 rounded overflow-hidden cursor-pointer">
                         <label htmlFor="uploadBanner" className="cursor-pointer">
                             <img src={blog.banner || dfBanner} className="w-full h-full object-cover" alt="banner" />

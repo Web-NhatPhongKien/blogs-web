@@ -1,26 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 
-export let activeTabLineRef;
-export let activeTabRef;
-
 const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, children }) => {
-    activeTabLineRef = useRef();
-    activeTabRef = useRef();
+    const activeTabLineRef = useRef();
+    const activeTabRef = useRef();
 
-    let [ inPageNavIndex, setInPageNavIndex ] = useState(defaultActiveIndex);
+    const [inPageNavIndex, setInPageNavIndex] = useState(defaultActiveIndex);
 
-    const changePageState = (btn, i) => {
-        let { offsetWidth, offsetLeft } = btn;
+    const updateActiveTab = (button, index) => {
+        if (!button || !activeTabLineRef.current) {
+            return;
+        }
+
+        const { offsetWidth, offsetLeft } = button;
 
         activeTabLineRef.current.style.width = offsetWidth + "px";
         activeTabLineRef.current.style.left = offsetLeft + "px";
 
-        setInPageNavIndex(i);
-    }
+        setInPageNavIndex(index);
+    };
 
     useEffect(() => {
-        changePageState( activeTabRef.current, defaultActiveIndex );
-    },  []) 
+        updateActiveTab(activeTabRef.current, defaultActiveIndex);
+    }, [defaultActiveIndex, routes]);
 
     return (
         <>
@@ -29,11 +30,16 @@ const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, 
                     routes.map((route, i) => {
                         return (
                             <button 
-                            ref={ i == defaultActiveIndex ? activeTabRef : null }
-                            key={i} 
-                            className={"inpage-nav-btn " + (inPageNavIndex == i ? "active" : "") + 
-                                (defaultHidden.includes(route) ? " hide-on-desktop" : "") }
-                            onClick={(e) => { changePageState(e.target, i) }}>
+                                type="button"
+                                ref={i === defaultActiveIndex ? activeTabRef : null}
+                                key={route}
+                                className={
+                                    "inpage-nav-btn " +
+                                    (inPageNavIndex === i ? "active" : "") +
+                                    (defaultHidden.includes(route) ? " hide-on-desktop" : "")
+                                }
+                                onClick={(e) => updateActiveTab(e.currentTarget, i)}
+                            >
                                 { route }
                             </button>
                         );

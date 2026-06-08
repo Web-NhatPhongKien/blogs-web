@@ -9,7 +9,7 @@ class UserService {
     searchUsersService = async (query, limit = 50) => {
         return await User.find({ "personal_info.username": new RegExp(query, 'i') })
             .limit(limit)
-            .select("personal_info.fullname personal_info.username personal_info.profile_image -_id");
+            .select("personal_info.fullname personal_info.username personal_info.profile_img -_id");
     }
 }
 
