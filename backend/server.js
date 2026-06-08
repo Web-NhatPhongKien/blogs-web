@@ -25,13 +25,16 @@ mongoose
   .then(() => console.log('DB connected'))
   .catch((e) => console.error(e.message));
 
-server.get("/latest-blogs", BlogController.getLatestBlogs);
+server.post("/latest-blogs", BlogController.getLatestBlogs);
 server.get("/trending-blogs", BlogController.getTrendingBlogs);
 server.post("/search-blogs", BlogController.searchBlogs);
 server.post("/get-blog", UserController.getBlog);
 
 server.post("/get-profile", UserController.getProfile);
 server.post("/search-users", UserController.searchUsers);
+
+server.post("/all-latest-blogs-count", BlogController.getAllLatestBlogsCount);
+server.post("/search-blogs-count", BlogController.getSearchBlogsCount);
 
   //routes
 server.use('/api/auth', authRoutes);
