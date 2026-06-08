@@ -4,7 +4,6 @@ import BlogPostCard from "../components/blog-post.component";
 import InPageNavigation from "../components/inpage-navigation.component";
 import MinimalBlogPost from "../components/nobanner-post.component";
 import Loader from "../components/loader.component";
-import { activeTabRef } from "../components/inpage-navigation.component";
 import NoDataMessage from "../components/nodata.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
@@ -78,10 +77,6 @@ const HomePage = () => {
     }
 
     useEffect(() => {
-
-        // Cập nhật vị trí thanh tab UI
-        activeTabRef.current.click();
-
         // Kiểm tra pageState đang ở trang chủ hay danh mục để gọi API tương ứng
         if (pageState === "home") {
             fetchLatestBlogs({ page: 1 });
@@ -101,8 +96,7 @@ const HomePage = () => {
             <section className="h-cover desktop-layout">
                 <div className="desktop-main">
                     <InPageNavigation 
-                        routes={[ pageState, "trending blogs"]} 
-                        defaultHidden={["trending blogs"]} 
+                        routes={[pageState]} 
                     >
                         <>
                             {blogs == null ? (
@@ -121,15 +115,6 @@ const HomePage = () => {
                                 fetchDataFun={(pageState === "home" ? fetchLatestBlogs : fetchBlogsByCategory)} 
                             />
                         </>
-
-                        {
-                            trendingBlogs == null ? <Loader /> :
-                                trendingBlogs.map((blog, i) => {
-                                    return (
-                                        <MinimalBlogPost blog={blog} index={i}/>
-                                    )
-                                })
-                        }
                     </InPageNavigation>
                 </div>
           

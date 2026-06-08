@@ -22,6 +22,7 @@ const Editor = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { user } = useAuth();
+    const [textEditor, setTextEditor] = useState({ _isReady: false });
 
     useEffect(() => {
 
@@ -34,7 +35,7 @@ const Editor = () => {
 
     return (
         <>
-            <editorContext.Provider value={{blog,setBlog,editorState,setEditorState}}>
+            <editorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor}}>
                 {
                 loading ? <p className="text-center mt-20" >Loading...</p> :
                 editorState === "editor" ? 

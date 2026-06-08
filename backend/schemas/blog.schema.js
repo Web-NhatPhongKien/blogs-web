@@ -63,7 +63,6 @@ const blogSchema = new Schema({
     timestamps: {
         createdAt: 'publishedAt'
     } 
-
 })
 
 export default mongoose.model("blogs", blogSchema);

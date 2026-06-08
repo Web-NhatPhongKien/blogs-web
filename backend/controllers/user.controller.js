@@ -1,4 +1,5 @@
 import UserService from "../services/user.service.js";
+import BlogService from "../services/blog.service.js";
 
 class UserController {
     getProfile = async (req, res, next) => {
@@ -32,7 +33,7 @@ class UserController {
         try {
             const { blog_id, draft, mode } = req.body;
             
-            const blog = await getBlogService(blog_id, mode);
+            const blog = await BlogService.getBlogService(blog_id, draft, mode);
 
 
             if (!blog) {
