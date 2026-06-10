@@ -13,6 +13,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
+import userRoutes from "./routes/user.route.js"; // THÊM
 
 const server = express();
 
@@ -38,6 +39,7 @@ server.post("/search-blogs-count", BlogController.getSearchBlogsCount);
 
   //routes
 server.use('/api/auth', authRoutes);
+server.use("/api/user", userRoutes); // THÊM: dùng cho sửa profile và đổi mật khẩu
 
 server.listen(process.env.PORT, () => {
   console.log('Listening on port ' + process.env.PORT);
