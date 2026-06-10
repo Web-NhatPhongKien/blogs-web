@@ -10,6 +10,7 @@ import Login from './pages/login.page';
 import Dashboard from './pages/dashboard.page';
 import ProtectedRoute from './routes/protected.route';
 import Profile from "./pages/profile.page";
+import EditProfile from "./pages/edit-profile.page";
 import { Toaster } from "react-hot-toast";
 import BlogPage from "./pages/blog.page";
 
@@ -28,8 +29,14 @@ const App = () => {
                 }
                 />
                 <Route path="/profile" element={
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                }
+                />
+                <Route path="/settings/edit-profile" element={
                         <ProtectedRoute>
-                            <Profile />
+                            <EditProfile />
                         </ProtectedRoute>
                     }
                 />
