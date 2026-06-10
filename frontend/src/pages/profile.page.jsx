@@ -115,13 +115,6 @@ const Profile = () => {
                 Edit profile
               </Link>
 
-              <Link
-                to="/settings/change-password"
-                className="profile-btn profile-btn-light"
-              >
-                Change password
-              </Link>
-
               {role === "admin" && (
                 <Link
                   to="/admin"
