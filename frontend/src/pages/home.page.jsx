@@ -6,7 +6,7 @@ import MinimalBlogPost from "../components/nobanner-post.component";
 import Loader from "../components/loader.component";
 import NoDataMessage from "../components/nodata.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
-import LoadMoreDataBtn from "../components/load-more.component";
+import Pagination from "../components/pagination.component";
 
 
 const HomePage = () => {
@@ -20,10 +20,11 @@ const HomePage = () => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
-                    state: blogs,
                     data: data.blogs,
-                    page,
-                    countRoute: "/all-latest-blogs-count"
+                    page: data.page,
+                    totalDocs: data.totalDocs,
+                    totalPages: data.totalPages,
+                    limit: data.limit
                 });
                 setBlogs(formattedData);
             })
@@ -37,11 +38,11 @@ const HomePage = () => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { tag: pageState, page })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
-                    state: blogs,
                     data: data.blogs,
-                    page,
-                    countRoute: "/search-blogs-count",
-                    data_to_send: { tag: pageState }
+                    page: data.page,
+                    totalDocs: data.totalDocs,
+                    totalPages: data.totalPages,
+                    limit: data.limit
                 });
                 setBlogs(formattedData);
             })
@@ -110,7 +111,7 @@ const HomePage = () => {
                                     })
                                 : <NoDataMessage message="No blogs published" />
                             )}
-                            <LoadMoreDataBtn 
+                            <Pagination 
                                 state={blogs} 
                                 fetchDataFun={(pageState === "home" ? fetchLatestBlogs : fetchBlogsByCategory)} 
                             />
