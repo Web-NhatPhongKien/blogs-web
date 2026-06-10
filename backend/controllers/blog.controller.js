@@ -67,6 +67,19 @@ class BlogController {
             next(err);
         }
     };
+
+    likeBlog = async (req, res, next) => {
+        try {
+            const user_id = req.user.userId; 
+            const { _id: blog_id, isLikedByUser } = req.body;
+
+            const result = await BlogService.toggleLikeBlogService(user_id, blog_id, isLikedByUser);
+
+            return res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 export default new BlogController();

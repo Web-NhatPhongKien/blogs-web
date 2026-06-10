@@ -32,8 +32,9 @@ class UserController {
     getBlog = async (req, res, next) => {
         try {
             const { blog_id, draft, mode } = req.body;
+            const user_id = req.user?.userId;
             
-            const blog = await BlogService.getBlogService(blog_id, draft, mode);
+            const { blog, liked_by_user } = await BlogService.getBlogService(blog_id, draft, mode, user_id);
 
 
             if (!blog) {
@@ -42,7 +43,7 @@ class UserController {
                 throw err;
             }
 
-            return res.status(200).json({ blog });
+            return res.status(200).json({ blog, liked_by_user });
         } catch (err) {
             next(err);
         }
