@@ -1,21 +1,21 @@
 import Blog from "../schemas/blog.schema.js";
 import Notification from "../schemas/notification.schema.js";
 class BlogService {
-    getLatestBlogsService = async (page, limit = 10) => {
+    getLatestBlogsService = async (page, maxLimit) => {
         return await Blog.find({ draft: false })
             .populate("author", "personal_info.profile_img personal_info.username -_id")
             .sort({ publishedAt: -1 })
             .select("blog_id title des banner activity tags publishedAt -_id")
-            .skip((page - 1) * limit)
-            .limit(limit);
+            .skip((page - 1) * maxLimit)
+            .limit(maxLimit);
     }
 
-    getTrendingBlogsService = async (limit = 5) => {
+    getTrendingBlogsService = async (maxLimit) => {
         return await Blog.find({ draft: false })
         .populate("author", "personal_info.profile_img personal_info.username -_id")
         .sort({ "activity.total_reads": -1, "activity.total_likes": -1, "publishedAt": -1 })
         .select("blog_id title publishedAt -_id")
-        .limit(limit);
+        .limit(maxLimit);
     }
 
     searchBlogsService = async ({ tag, query, author, page = 1, limit = 10, eliminate_blog }) => {
