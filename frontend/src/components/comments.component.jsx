@@ -23,6 +23,10 @@ export const fetchComments = async ({ skip = 0, blog_id, setParentCommentCountFu
             } else {
                 res = { results: [...comment_array, ...data] };
             }
+        })
+        .catch(err => {
+            console.log(err);
+            res = comment_array == null ? { results: [] } : { results: comment_array };
         });
 
     return res;

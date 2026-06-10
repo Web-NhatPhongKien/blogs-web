@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const BlogPostCard = ({ content, author }) => {
     let { publishedAt, tags, title, des, banner, activity: { total_likes }, blog_id: id } = content;
-    let { fullname, profile_img, username } = author;
+    let { profile_img, username } = author;
 
     return (
 
@@ -11,7 +11,7 @@ const BlogPostCard = ({ content, author }) => {
             <div className="blog-post-content">
                 <div className="blog-post-meta">
                     <img src={profile_img} className="blog-post-avatar"/>
-                    <p className="blog-post-author">{fullname} @{username}</p>
+                    <p className="blog-post-author">{username}</p>
                     <p className="blog-post-date">{ getDay(publishedAt) }</p>
                 </div>
 

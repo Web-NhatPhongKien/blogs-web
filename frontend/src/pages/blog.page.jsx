@@ -13,6 +13,13 @@ export const blogStructure = {
     description: '',
     content: [],
     author: { personal_info: { } },
+    activity: {
+        total_likes: 0,
+        total_comments: 0,
+        total_reads: 0,
+        total_parent_comments: 0,
+    },
+    comments: { results: [] },
     banner: '',
     publishedAt: '',
 };
@@ -33,24 +40,33 @@ const BlogPage = () => {
 
     let { 
         title, content, banner, publishedAt, 
-        author: { personal_info: { fullname, username: author_username, profile_image } } 
+        author: { personal_info: { fullname, username: author_username, profile_img } } 
     } = blog;
+    const contentBlocks = Array.isArray(content) ? content : content?.blocks || [];
 
     const fetchBlog = () => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id })
-            .then(async ({ data: { blog } }) => {
+        const access_token = sessionStorage.getItem("token");
+        const config = access_token ? {
+            headers: {
+                Authorization: `Bearer ${access_token}`
+            }
+        } : {};
+
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id }, config)
+            .then(async ({ data: { blog, liked_by_user } }) => {
                 
                 blog.comments = await fetchComments({ 
                     blog_id: blog._id, 
                     setParentCommentCountFun: setTotalParentCommentsLoaded 
                 });
                 
-                setBlog(blog); // Cập nhật state bài viết
+                setBlog(blog); 
+                setLikedByUser(Boolean(liked_by_user));
 
                 axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { 
                     tag: blog.tags, 
                     limit: 6, 
-                    eliminate_blog: blog_id // Loại trừ bài hiện tại khỏi danh sách gợi ý
+                    eliminate_blog: blog_id 
                 })
                 .then(({ data }) => {
                     setSimilarBlogs(data.blogs);
@@ -101,7 +117,7 @@ const BlogPage = () => {
                             <div className="blog-page-author-row">
                                 
                                 <div className="blog-page-author">
-                                    <img src={profile_image} className="blog-page-author-avatar" />
+                                    <img src={profile_img} className="blog-page-author-avatar" />
                                     <p className="blog-page-author-name">
                                         {fullname} <br />
                                         <Link to={`/user/${author_username}`} className="blog-page-author-link">
@@ -117,18 +133,16 @@ const BlogPage = () => {
                             </div>
                         </div>
 
-                        {/* Thanh tương tác (Like, Comment, Share) nằm trên nội dung */}
                         <BlogInteraction />
 
                         <div className="blog-page-content-wrap blog-page-content">
-                            {content?.blocks.map((block, i) => (
+                            {contentBlocks.map((block, i) => (
                                 <div key={i} className="blog-page-block">
                                     <BlogContent block={block} />
                                 </div>
                             ))}
                         </div>
 
-                        {/* Thanh tương tác nằm dưới nội dung (Để người dùng không phải cuộn lên) */}
                         <BlogInteraction />
 
                         {similarBlogs !== null && similarBlogs.length ?

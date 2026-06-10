@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { getDay } from "../common/date";    
 
 const MinimalBlogPost = ({ blog, index}) => {
-    let { title, blog_id: id, author: { personal_info: { fullname, username, profile_img } }, publishedAt } = blog;
+    let { title, blog_id: id, author: { personal_info: { username, profile_img } }, publishedAt } = blog;
 
     return (
 
@@ -12,7 +12,7 @@ const MinimalBlogPost = ({ blog, index}) => {
             <div>
                  <div className="minimal-post-meta">
                     <img src={profile_img} className="minimal-post-avatar"/>
-                    <p className="minimal-post-author">{fullname} @{username}</p>
+                    <p className="minimal-post-author">@{username}</p>
                     <p className="minimal-post-date">{ getDay(publishedAt) }</p>
                 </div>
 

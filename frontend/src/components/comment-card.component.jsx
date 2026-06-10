@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { getDay } from "../common/date";
-import { UserContext } from "../App";
+import { useAuth } from "../context/auth.context";
 import toast from "react-hot-toast";
 import CommentField from "./comment-field.component";
 import { BlogContext } from "../pages/blog.page";
@@ -13,12 +13,39 @@ const CommentCard = ({ index, leftVal, commentData }) => {
         commentedAt, comment, _id, children
     } = commentData;
 
-    let { userAuth: { access_token, username } } = useContext(UserContext);
+    const { user } = useAuth();
+    const access_token = sessionStorage.getItem("token");
+    const username = user?.personal_info?.username;
     let {
-        blog: { author: { personal_info: { username: blog_author } } },
+        blog,
+        setBlog,
+        blog: { 
+            author: { personal_info: { username: blog_author } }, 
+            comments,
+            activity
+        },
     } = useContext(BlogContext);
 
     const [isReplying, setReplying] = useState(false);
+
+    const getId = (value) => value?._id?.toString?.() || value?.toString?.() || value;
+
+    const collectDescendantIds = (commentId, list) => {
+        const ids = new Set();
+        const targetId = getId(commentId);
+
+        const collect = (parentId) => {
+            list.forEach(comment => {
+                if (getId(comment.parent) === parentId) {
+                    ids.add(getId(comment._id));
+                    collect(getId(comment._id));
+                }
+            });
+        };
+
+        collect(targetId);
+        return ids;
+    };
 
     const handleReplyClick = () => {
         if (!access_token) {
@@ -28,22 +55,98 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     };
 
     const hideReplies = () => {
-        commentData.isReplyLoaded = false;
+        const idsToHide = collectDescendantIds(_id, comments.results);
+
+        const newCommentsArr = comments.results
+            .filter(comment => !idsToHide.has(getId(comment._id)))
+            .map(comment => {
+                if (getId(comment._id) === getId(_id)) {
+                    return { ...comment, isReplyLoaded: false };
+                }
+
+                return comment;
+            });
+
+        setBlog({
+            ...blog,
+            comments: {
+                ...comments,
+                results: newCommentsArr
+            }
+        });
     };
 
     const loadReplies = () => {
-        if(children.length) {
-            hideReplies();
-        }
+        if (!children.length || commentData.isReplyLoaded) return;
+
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-replies-comments", { children })
+            .then(({ data: { replies } }) => {
+                const existingIds = new Set(comments.results.map(comment => getId(comment._id)));
+
+                const newReplies = replies
+                    .filter(reply => !existingIds.has(getId(reply._id)))
+                    .map(reply => ({
+                        ...reply,
+                        childrenLevel: commentData.childrenLevel + 1,
+                        parentIndex: index
+                    }));
+
+                const newCommentsArr = [...comments.results];
+
+                const updatedParent = {
+                    ...commentData,
+                    isReplyLoaded: true
+                };
+
+                newCommentsArr[index] = updatedParent;
+                newCommentsArr.splice(index + 1, 0, ...newReplies);
+
+                setBlog({
+                    ...blog,
+                    comments: {
+                        ...comments,
+                        results: newCommentsArr
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err.response?.data || err);
+            });
     };
 
     const deleteComment = (e) => {
-        e.target.setAttribute("disabled", true);
+        const button = e.currentTarget;
+        button.setAttribute("disabled", true);
+
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment", { _id }, {
             headers: { 'Authorization': `Bearer ${access_token}` }
-        }).then(() => {
-            e.target.removeAttribute("disabled");
-        }).catch(err => console.log(err));
+        })
+        .then(() => {
+            const idsToRemove = collectDescendantIds(_id, comments.results);
+            idsToRemove.add(getId(_id));
+
+            const newResults = comments.results.filter(comment => !idsToRemove.has(getId(comment._id)));
+
+            setBlog({
+                ...blog,
+                comments: {
+                    ...comments,
+                    results: newResults
+                },
+                activity: {
+                    ...activity,
+                    total_comments: Math.max(0, activity.total_comments - idsToRemove.size),
+                    total_parent_comments: commentData.parent
+                        ? activity.total_parent_comments
+                        : Math.max(0, activity.total_parent_comments - 1)
+                }
+            });
+        })
+        .catch(err => {
+            console.log(err.response?.status);
+            console.log(err.response?.data);
+            button.removeAttribute("disabled");
+        });
     };
 
     return (

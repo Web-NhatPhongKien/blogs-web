@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../App";
+import { useAuth } from "../context/auth.context";
 import { BlogContext } from "../pages/blog.page";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
@@ -8,7 +8,11 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
     
     const [comment, setComment] = useState("");
 
-    let { userAuth: { access_token, username, fullname, profile_image } } = useContext(UserContext);
+    const { user } = useAuth();
+    const access_token = sessionStorage.getItem("token");
+    const username = user?.personal_info?.username;
+    const fullname = user?.personal_info?.fullname || username;
+    const profile_image = user?.personal_info?.profile_image || user?.personal_info?.profile_img;
     
     let { 
         blog, 
@@ -16,6 +20,8 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
         setBlog, 
         setTotalParentCommentsLoaded 
     } = useContext(BlogContext);
+
+    const getId = (value) => value?._id?.toString?.() || value?.toString?.() || value;
 
     const handleComment = () => {
         if (!access_token) {
@@ -44,14 +50,30 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             let newCommentArr;
 
             if (replyingTo) {
-                commentsArr[index].children.push(data._id);
+                const parentComment = commentsArr[index];
+                const parentChildren = parentComment.children || [];
   
-                data.childrenLevel = commentsArr[index].childrenLevel + 1;
+                data.parent = replyingTo;
+                data.isReply = true;
+                data.children = data.children || [];
+                data.childrenLevel = parentComment.childrenLevel + 1;
                 data.parentIndex = index;
-                commentsArr[index].isReplyLoaded = true;
 
-                commentsArr.splice(index + 1, 0, data);
-                newCommentArr = commentsArr;
+                newCommentArr = commentsArr.map((comment, i) => {
+                    if (i !== index) {
+                        return comment;
+                    }
+
+                    return {
+                        ...comment,
+                        children: parentChildren.some(childId => getId(childId) === getId(data._id))
+                            ? parentChildren
+                            : [...parentChildren, data._id],
+                        isReplyLoaded: true
+                    };
+                });
+
+                newCommentArr.splice(index + 1, 0, data);
 
                 setReplying(false);
             } 

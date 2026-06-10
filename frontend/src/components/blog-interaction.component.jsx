@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { BlogContext } from "../pages/blog.page";
 import { Link } from "react-router-dom";
-import { UserContext } from "../App";
+import { useAuth } from "../context/auth.context";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
@@ -22,7 +22,9 @@ const BlogInteraction = () => {
         setCommentsWrapper 
     } = useContext(BlogContext);
 
-    let { userAuth: { username, access_token } } = useContext(UserContext);
+    const { user } = useAuth();
+    const username = user?.personal_info?.username;
+    const access_token = sessionStorage.getItem("token");
 
     const handleLike = () => {
         // Kiểm tra xem người dùng đã đăng nhập chưa
@@ -57,41 +59,41 @@ const BlogInteraction = () => {
         <>
             <Toaster />
             <hr className="blog-interaction-divider" />
-            <div className="blog-interaction-row">
-                
-                <div className="blog-interaction-group">
+                <div className="blog-interaction-row">
+                    
+                    <div className="blog-interaction-group">
 
-                    <div className="blog-interaction-item">
-                        <button
-                            onClick={handleLike}
-                            className={"blog-interaction-btn " + (isLikedByUser ? "liked" : "") }>
-                            <i className={"fi " + (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")}></i>
-                        </button>
+                        <div className="blog-interaction-item">
+                            <button
+                                onClick={handleLike}
+                                className={"blog-interaction-btn " + (isLikedByUser ? "liked" : "") }>
+                                <i className={"fi " + (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")}></i>
+                            </button>
 
-                        <p className="blog-interaction-count">{total_likes}</p>
+                            <p className="blog-interaction-count">{total_likes}</p>
+                        </div>
+
+                        <div className="blog-interaction-item">
+                            <button
+                                onClick={() => setCommentsWrapper(preVal => !preVal)}
+                                className="blog-interaction-btn">
+                                <i className="fi fi-rr-comment-dots"></i>
+                            </button>
+                            <p className="blog-interaction-count">{total_comments}</p>
+                        </div>
                     </div>
 
-                    <div className="blog-interaction-item">
-                        <button
-                            onClick={() => setCommentsWrapper(preVal => !preVal)}
-                            className="blog-interaction-btn">
-                            <i className="fi fi-rr-comment-dots"></i>
-                        </button>
-                        <p className="blog-interaction-count">{total_comments}</p>
+                    <div className="blog-interaction-group">
+                        {
+                            username === author_username ? 
+                            <Link to={`/editor/${blog_id}`} className="blog-interaction-edit">Edit</Link> : ""
+                        }
+
+                        <Link to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`} target="_blank" className="blog-interaction-share">
+                            <i className="fi fi-brands-twitter"></i>
+                        </Link>
                     </div>
                 </div>
-
-                <div className="blog-interaction-group">
-                    {
-                        username === author_username ? 
-                        <Link to={`/editor/${blog_id}`} className="blog-interaction-edit">Edit</Link> : ""
-                    }
-
-                    <Link to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`} target="_blank" className="blog-interaction-share">
-                        <i className="fi fi-brands-twitter"></i>
-                    </Link>
-                </div>
-            </div>
             
             <hr className="blog-interaction-divider" />
         </>

@@ -11,6 +11,7 @@ import Dashboard from './pages/dashboard.page';
 import ProtectedRoute from './routes/protected.route';
 import Profile from "./pages/profile.page";
 import { Toaster } from "react-hot-toast";
+import BlogPage from "./pages/blog.page";
 
 const App = () => {
     return (
@@ -35,6 +36,8 @@ const App = () => {
                 <Route path="search/:query" element={<SearchPage />} />
                 <Route path="user/:id" element={<ProfilePage />} />
                 <Route path="*" element={<PageNotFound />} />
+
+                <Route path="/blog/:blog_id" element={<BlogPage />} />
             </Route>
 
         </Routes>
