@@ -17,7 +17,7 @@ export default function Login() {
         e.preventDefault();
         const res = await API.post('/login', form);
         login(res.data);
-        navigate('/dashboard');
+        navigate('/');
     };
 
     return (

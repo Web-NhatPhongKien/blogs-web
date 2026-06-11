@@ -1,4 +1,3 @@
-import { createContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import HomePage from "./pages/home.page";
@@ -11,52 +10,45 @@ import Login from './pages/login.page';
 import Dashboard from './pages/dashboard.page';
 import ProtectedRoute from './routes/protected.route';
 import Profile from "./pages/profile.page";
+import EditProfile from "./pages/edit-profile.page";
 import { Toaster } from "react-hot-toast";
-
-export const UserContext = createContext({});
+import BlogPage from "./pages/blog.page";
 
 const App = () => {
-    const [userAuth, setUserAuth] = useState({ access_token: null });
-
-    useEffect(() => {
-        const userInSession = sessionStorage.getItem("user");
-
-        if (userInSession) {
-            setUserAuth(JSON.parse(userInSession));
-        }
-    }, []);
-
     return (
-        <UserContext.Provider value={{ userAuth, setUserAuth }}>
-            <Routes>
-                <Route path="/editor" element={<Editor />} />
-
-                <Route path="/" element={<Navbar />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-
-                    <Route path="/dashboard" element={
+        <Routes>
+            <Route path="/editor" element={<Editor />} />
+            <Route path="/" element={<Navbar />} >
+                <Route index element={<HomePage />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/dashboard' element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+                />
+                <Route path="/profile" element={
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                }
+                />
+                <Route path="/settings/edit-profile" element={
                         <ProtectedRoute>
-                            <Dashboard />
+                            <EditProfile />
                         </ProtectedRoute>
-                    } />
+                    }
+                />
+                <Route path="search/:query" element={<SearchPage />} />
+                <Route path="user/:id" element={<ProfilePage />} />
+                <Route path="*" element={<PageNotFound />} />
 
-                    <Route path="/profile" element={
-                        <ProtectedRoute>
-                            <Profile />
-                        </ProtectedRoute>
-                    } />
+                <Route path="/blog/:blog_id" element={<BlogPage />} />
+            </Route>
 
-                    <Route path="search/:query" element={<SearchPage />} />
-                    <Route path="user/:id" element={<ProfilePage />} />
-                    <Route path="*" element={<PageNotFound />} />
-                </Route>
-            </Routes>
-
-            <Toaster />
-        </UserContext.Provider>
+        </Routes>
     );
-};
+}
 
 export default App;
