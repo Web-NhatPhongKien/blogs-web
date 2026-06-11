@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const UserCard = ({ user }) => {
 
-    let { personal_info: { fullname, username, profile_image } } = user;
+    let { personal_info: { fullname, username, profile_img } } = user;
 
     return (
 

@@ -1334,6 +1334,54 @@ input:disabled ~ .input-icon {
   background: rgba(229, 231, 235, 0.3);
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+
+  margin-top: var(--space-6);
+}
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-3);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+
+  color: var(--color-muted);
+  background: var(--color-surface);
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled),
+.pagination-btn.active {
+  color: var(--color-text);
+  border-color: var(--color-text);
+  background: rgba(229, 231, 235, 0.35);
+}
+
+.pagination-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.pagination-gap {
+  color: var(--color-muted);
+}
+
 .loader-wrap {
   width: 48px;
   margin: var(--space-8) auto;
