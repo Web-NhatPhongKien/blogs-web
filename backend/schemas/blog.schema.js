@@ -65,4 +65,19 @@ const blogSchema = new Schema({
     } 
 })
 
+blogSchema.index(
+    {
+        title: "text",
+        des: "text",
+        tags: "text"
+    },
+    {
+        weights: {
+            title: 10,
+            tags: 5,
+            des: 2
+        }
+    }
+);
+
 export default mongoose.model("blogs", blogSchema);
