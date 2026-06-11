@@ -7,6 +7,8 @@ import UserController from "./controllers/user.controller.js";
 import CommentController from "./controllers/comment.controller.js";
 import { verifyToken, verifyTokenOptional } from "./middlewares/auth.middleware.js";
 
+import { verifyToken } from "./middlewares/auth.middleware.js";
+
 dotenv.config();
 
 import express from 'express';
@@ -38,6 +40,7 @@ server.post("/search-users", UserController.searchUsers);
 
 server.post("/all-latest-blogs-count", BlogController.getAllLatestBlogsCount);
 server.post("/search-blogs-count", BlogController.getSearchBlogsCount);
+server.post("/create-blog", verifyToken, BlogController.createBlog);
 
 server.post("/like-blog", verifyToken, BlogController.likeBlog);
 
