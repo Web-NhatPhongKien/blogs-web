@@ -38,9 +38,9 @@ const AdminLayout = () => {
             Danh mục / Tags
           </NavLink>
 
-          <NavLink to="/admin/admins">
+          {/* <NavLink to="/admin/admins">
             Quản trị viên
-          </NavLink>
+          </NavLink> */}
         </nav>
       </aside>
 
