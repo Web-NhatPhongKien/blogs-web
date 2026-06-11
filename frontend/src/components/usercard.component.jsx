@@ -8,7 +8,7 @@ const UserCard = ({ user }) => {
 
         <Link to={`/user/${username}`} className="user-card">
             
-            <img src={profile_image} className="user-card-avatar" />
+            <img src={profile_img} className="user-card-avatar" />
 
             <div>
                 <h1 className="user-card-name">{fullname}</h1>

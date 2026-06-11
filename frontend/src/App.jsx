@@ -1,3 +1,4 @@
+import { createContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar";
 import HomePage from "./pages/home.page";
@@ -19,7 +20,19 @@ import AdminUsers from "./pages/admin/admin-users.page";
 import AdminBlogs from "./pages/admin/admin-blogs.page";
 import AdminTags from "./pages/admin/admin-tags.page";
 
+export const UserContext = createContext({});
+
 const App = () => {
+    const [userAuth, setUserAuth] = useState({ access_token: null });
+
+    useEffect(() => {
+        const userInSession = sessionStorage.getItem("user");
+
+        if (userInSession) {
+            setUserAuth(JSON.parse(userInSession));
+        }
+    }, []);
+
     return (
         <Routes>
             <Route path="/" element={<Navbar />} >
@@ -54,11 +67,15 @@ const App = () => {
                 <Route path="user/:id" element={<ProfilePage />} />
                 <Route path="*" element={<PageNotFound />} />
 
-                <Route path="/blog/:blog_id" element={<BlogPage />} />
-            </Route>
+                    <Route path="search/:query" element={<SearchPage />} />
+                    <Route path="user/:id" element={<ProfilePage />} />
+                    <Route path="*" element={<PageNotFound />} />
+                </Route>
+            </Routes>
 
-        </Routes>
+            <Toaster />
+        </UserContext.Provider>
     );
-}
+};
 
 export default App;

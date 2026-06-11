@@ -2,11 +2,19 @@ import toast, { Toaster } from "react-hot-toast";
 import { useContext } from "react";
 import { editorContext } from "./editor.pages";
 import Tag from "./tags.components";
+import axios from "axios";
+import Loader from "./loader.component";
+import { useNavigate } from "react-router-dom";
+
 
 const PublishForm = () => {
     let characterLimit = 200;
     let tagLimit = 10;
-    let {blog, blog:{banner, title, tags, des},setEditorState, setBlog} = useContext(editorContext);
+    let {blog, blog:{banner, title, tags, des, content},setEditorState, setBlog} = useContext(editorContext);
+
+    let token = sessionStorage.getItem("token");
+
+    let navigate = useNavigate();
 
     const handleTitleChange = (e) =>{
         let input = e.target;
@@ -47,6 +55,66 @@ const PublishForm = () => {
         e.target.value ="";
         }
     };
+
+
+    const publishBlog = (e) => {
+        if (e.target.className.includes("disable")){
+            return;
+        }
+
+        if (!token) {
+            return toast.error("Bạn cần đăng nhập để đăng bài");
+        }
+
+        if(!title.length){
+            return toast.error("Write blog title before publishing")
+        }
+
+        if(!des.length || des.length > characterLimit){
+            return toast.error("Write blog description before publishing")
+        }
+        
+        if(!tags.length || tags.length > tagLimit) {
+            return toast.error("Write blog tags before publishing")
+        }
+
+        // 1. Khóa nút và hiện Loading Toast đúng chuẩn
+        e.target.classList.add('disable');
+
+        const loadingToast = toast.loading("Publishing...");
+
+        let blogObj = { title, banner, des, content, tags, draft: false };
+
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog",
+            blogObj, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+        .then(({ data }) => {
+        console.log("Publish success:", data);
+
+        toast.success("Published", {
+            id: loadingToast
+        });
+
+        setTimeout(() => {
+            navigate("/", { replace: true });
+        }, 800);
+        })
+        .catch((err) => {
+            console.log("Publish error:", err.response?.data || err.message);
+
+            toast.error(err.response?.data?.error || "Something went wrong", {
+                id: loadingToast
+            });
+
+            setIsPublishing(false);
+        });
+    }
+
+
     return (
         <section className="w-screen min-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-24 relative max-w-[1200px] mx-auto px-10">
 
@@ -94,7 +162,15 @@ const PublishForm = () => {
                        return <Tag tag={tag} key={i} tagIndex={i} />
                     } )}
 
+
+                    
                 </div>
+                <p className=" text-right text-sm mt-1 text-dark-grey">{tagLimit - tags.length} Tags left</p>
+
+                <button className="btn-dark"
+                onClick={publishBlog}
+                >Publish</button>
+
             </div>
 
         </section>

@@ -18,7 +18,7 @@ class BlogService {
         .limit(maxLimit);
     }
 
-    searchBlogsService = async ({ tag, query, author, page = 1, limit = 10, eliminate_blog }) => {
+    searchBlogsService = async ({ tag, query, author, page, limit, eliminate_blog }) => {
         let findQuery = { draft: false };
 
         // Xây dựng query động giống logic của bạn
@@ -26,7 +26,7 @@ class BlogService {
             findQuery.tags = tag;
             if (eliminate_blog) findQuery.blog_id = { $ne: eliminate_blog };
         } else if (query) {
-            findQuery.title = new RegExp(query, 'i');
+            findQuery.$text = { $search: query };
         } else if (author) {
             findQuery.author = author;
         }
@@ -34,6 +34,15 @@ class BlogService {
         const skipDocs = (page - 1) * limit;
 
         // Trực tiếp trả về Promise
+        if (query && !tag) {
+            return await Blog.find(findQuery, { score: { $meta: "textScore" } })
+                .populate("author", "personal_info.profile_img personal_info.username -_id")
+                .sort({ score: { $meta: "textScore" }, publishedAt: -1 })
+                .select("blog_id title des banner activity tags publishedAt -_id")
+                .skip(skipDocs)
+                .limit(limit);
+        }
+
         return await Blog.find(findQuery)
             .populate("author", "personal_info.profile_img personal_info.username -_id")
             .sort({ publishedAt: -1 }) // Hoặc sort theo mức độ liên quan tùy bạn
@@ -92,7 +101,7 @@ class BlogService {
         if (tag) {
             findQuery.tags = tag;
         } else if (query) {
-            findQuery.title = new RegExp(query, 'i');
+            findQuery.$text = { $search: query };
         } else if (author) {
             findQuery.author = author;
         }
