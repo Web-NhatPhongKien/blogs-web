@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, children }) => {
+const InPageNavigation = ({ routes, defaultActiveIndex = 0, children }) => {
     const activeTabLineRef = useRef();
     const activeTabRef = useRef();
 
@@ -33,11 +33,7 @@ const InPageNavigation = ({ routes, defaultHidden = [], defaultActiveIndex = 0, 
                                 type="button"
                                 ref={i === defaultActiveIndex ? activeTabRef : null}
                                 key={route}
-                                className={
-                                    "inpage-nav-btn " +
-                                    (inPageNavIndex === i ? "active" : "") +
-                                    (defaultHidden.includes(route) ? " hide-on-desktop" : "")
-                                }
+                                className={"inpage-nav-btn " + (inPageNavIndex === i ? "active" : "")}
                                 onClick={(e) => updateActiveTab(e.currentTarget, i)}
                             >
                                 { route }
