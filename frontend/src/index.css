@@ -1616,7 +1616,7 @@ input:disabled ~ .input-icon {
   position: fixed;
   top: 0;
   right: -100%;
-  z-index: 50;
+  z-index: 200;
 
   width: 520px;
   max-width: 100%;

@@ -7,7 +7,6 @@ import UserController from "./controllers/user.controller.js";
 import CommentController from "./controllers/comment.controller.js";
 import { verifyToken, verifyTokenOptional } from "./middlewares/auth.middleware.js";
 
-import { verifyToken } from "./middlewares/auth.middleware.js";
 
 dotenv.config();
 
