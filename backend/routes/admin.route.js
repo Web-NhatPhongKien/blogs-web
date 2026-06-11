@@ -5,9 +5,6 @@ import { isAdmin } from "../middlewares/role.middleware.js";
 
 const router = express.Router();
 
-// Login riêng cho admin
-router.post("/login", AdminController.adminLogin);
-
 // Tất cả route bên dưới bắt buộc phải đăng nhập và là admin
 router.use(verifyToken);
 router.use(isAdmin);

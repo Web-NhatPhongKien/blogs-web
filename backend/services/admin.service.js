@@ -35,41 +35,6 @@ const getBlogFindQuery = (blogId) => {
 };
 
 class AdminService {
-  // Đăng nhập admin
-  adminLoginService = async ({ email, password }) => {
-    const user = await User.findOne({
-      "personal_info.email": email,
-    });
-
-    if (!user) {
-      throw new Error("Email không tồn tại");
-    }
-
-    if (user.role !== "admin") {
-      throw new Error("Tài khoản này không có quyền quản trị");
-    }
-
-    const isMatch = await bcrypt.compare(
-      password,
-      user.personal_info.password
-    );
-
-    if (!isMatch) {
-      throw new Error("Mật khẩu không đúng");
-    }
-
-    const token = generateToken(user);
-
-    const safeUser = await User.findById(user._id).select(
-      "-personal_info.password -blogs -google_auth -updatedAt"
-    );
-
-    return {
-      message: "Đăng nhập admin thành công",
-      token,
-      user: safeUser,
-    };
-  };
 
   // Lấy danh sách user: có phân trang, search, sort, filter
   getUsersService = async (queryData) => {

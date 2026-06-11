@@ -1,17 +1,7 @@
 import AdminService from "../services/admin.service.js";
 
 class AdminController {
-  // Đăng nhập admin
-  adminLogin = async (req, res, next) => {
-    try {
-      const data = await AdminService.adminLoginService(req.body);
-
-      return res.status(200).json(data);
-    } catch (err) {
-      next(err);
-    }
-  };
-
+  
   // Lấy danh sách user
   getUsers = async (req, res, next) => {
     try {
