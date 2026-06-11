@@ -76,7 +76,7 @@ class BlogController {
 
     createBlog = async (req, res, next) => {
     try {
-        let authorId = req.user.id || req.user._id || req.user.userId || req.user.user_id;
+        let authorId = req.user.userId
 
         if (!authorId) {
             return res.status(401).json({ error: "Invalid token, author not found" });
