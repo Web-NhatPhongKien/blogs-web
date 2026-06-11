@@ -78,8 +78,7 @@ const SearchPage = () => {
         <section className="h-cover desktop-layout">
             <div className="desktop-main">
                 <InPageNavigation 
-                    routes={[`Search Results from "${query}"`, "Accounts Matched"]} 
-                    defaultHidden={["Accounts Matched"]}
+                    routes={[`Search Results from "${query}"`]} 
                 >
                     {/* Tab 1: Kết quả tìm kiếm Blog */}
                     <>
@@ -96,8 +95,6 @@ const SearchPage = () => {
                         )}
                         <Pagination state={blogs} fetchDataFun={searchBlogs} />
                     </>
-
-                    <UserCardWrapper />
 
                 </InPageNavigation>
             </div>
