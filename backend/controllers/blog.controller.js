@@ -3,7 +3,7 @@ import  BlogService  from "../services/blog.service.js";
 import { nanoid } from "nanoid";
 import joi from "joi";
 import User from "../schemas/user.schema.js";
-import Blog from "../schemas/blog.js";
+import Blog from "../schemas/blog.schema.js";
 
 
 class BlogController {
