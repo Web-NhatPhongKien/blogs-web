@@ -1,18 +1,20 @@
 import logo from "../imgs/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
 import React, { useContext, useEffect,useRef } from "react";
 import { editorContext } from "./editor.pages";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "./tools.components";
 import { toast } from "react-hot-toast";
-
+import axios from "axios";
 
 
 const BlogEditor = () => {
     let { blog, blog: { title, banner, content, tags, des }, setBlog, textEditor, setTextEditor, setEditorState } = useContext(editorContext);
     const textEditorRef = useRef(null);
     const editorInstanceRef = useRef(null);
+    let token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
 
     useEffect(() =>{
         if (editorInstanceRef.current) return;
@@ -95,6 +97,52 @@ const BlogEditor = () => {
         });
         };
     }
+
+    const handleSaveDraft = (e) => {
+        const button = e.currentTarget;
+
+        if (button.className.includes("disable")){
+            return;
+        }
+
+
+        if(!title.length){
+            return toast.error("Write blog title before save Draft")
+        }
+
+        button.classList.add("disable");
+
+        const loadingToast = toast.loading("Saving...");
+
+        let blogObj = { title, banner, des, content, tags, draft: true };
+
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog",
+            blogObj, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+        .then(({ data }) => {
+            console.log("Save draft success:", data);
+
+            toast.success("Saved draft", {
+            id: loadingToast 
+            });
+            setTimeout(() => {
+                navigate("/", { replace: true });
+            }, 800);
+        })
+        .catch((err) => {
+            console.log("Save draft error:", err.response?.data || err.message);
+            button.classList.remove("disable");
+            toast.error(err.response?.data?.error || "Something went wrong", {
+                id: loadingToast
+            });
+        });
+
+    }
+
     return (
         <>
             <nav className="navbar gap-4">
@@ -104,7 +152,7 @@ const BlogEditor = () => {
                 <p className="line-clamp-1 w-full font-medium ml-4">{blog.title && blog.title.length ? blog.title : "New Blog"}</p>
                 <div className="flex gap-4 ml-auto">
                     <button className="btn-dark px-4 py-2 text-sm" onClick={handlePublishEvent}>Publish</button>
-                    <button className="btn-light px-4 py-2 text-sm">Save Draft</button>
+                    <button className="btn-light px-4 py-2 text-sm" onClick={handleSaveDraft}>Save Draft</button>
                 </div>
             </nav>
             <section>

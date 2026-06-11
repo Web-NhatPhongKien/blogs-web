@@ -94,22 +94,26 @@ class BlogController {
             if (!title.length) {
                 return res.status(403).json({ error: "You must provide a title" });
             }
-
-            if (!des.length || des.length > 200) {
+            
+            if (!draft){
+                if (!des.length || des.length > 200) {
                 return res.status(403).json({ error: "You must provide blog descriptiom under 200 character" });
+                }
+
+                if (!banner.length) {
+                    return res.status(403).json({ error: "You must provide blog banner" });
+                }
+
+                if (!content?.blocks?.length) {
+                    return res.status(403).json({ error: "You must provide blog content" });
+                }
+
+                if (!tags.length || tags.length > 10) {
+                    return res.status(403).json({ error: "You must provide tags in order, Maximum 10" });
+                }
             }
 
-            if (!banner.length) {
-                return res.status(403).json({ error: "You must provide blog banner" });
-            }
-
-            if (!content?.blocks?.length) {
-                return res.status(403).json({ error: "You must provide blog content" });
-            }
-
-            if (!tags.length || tags.length > 10) {
-                return res.status(403).json({ error: "You must provide tags in order, Maximum 10" });
-            }
+            
 
             tags = tags.map(tag => tag.toLowerCase());
 
