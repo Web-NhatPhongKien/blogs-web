@@ -5,6 +5,8 @@ import { registerSchema, signinSchema } from "./validates/auth.validate.js";
 import BlogController from "./controllers/blog.controller.js";
 import UserController from "./controllers/user.controller.js";
 
+import { verifyToken } from "./middlewares/auth.middleware.js";
+
 dotenv.config();
 
 import express from 'express';
@@ -35,7 +37,10 @@ server.post("/search-users", UserController.searchUsers);
 
 server.post("/all-latest-blogs-count", BlogController.getAllLatestBlogsCount);
 server.post("/search-blogs-count", BlogController.getSearchBlogsCount);
-
+server.get("/test", (req, res) => {
+  res.json({ message: "Backend đúng đang chạy" });
+});
+server.post("/create-blog", verifyToken, BlogController.createBlog);
   //routes
 server.use('/api/auth', authRoutes);
 
