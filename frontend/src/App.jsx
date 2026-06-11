@@ -16,11 +16,12 @@ import AdminRoute from "./routes/admin.route";
 import AdminLayout from "./pages/admin/admin-layout.page";
 import AdminDashboard from "./pages/admin/admin-dashboard.page";
 import AdminUsers from "./pages/admin/admin-users.page";
+import AdminBlogs from "./pages/admin/admin-blogs.page";
+import AdminTags from "./pages/admin/admin-tags.page";
 
 const App = () => {
     return (
         <Routes>
-            
             <Route path="/" element={<Navbar />} >
                 <Route index element={<HomePage />} />
                 <Route path='/register' element={<Register />} />
@@ -40,6 +41,8 @@ const App = () => {
                 >
                     <Route index element={<AdminDashboard />} />
                     <Route path="users" element={<AdminUsers />} />
+                    <Route path="blogs" element={<AdminBlogs />} />
+                    <Route path="tags" element={<AdminTags />} />
                 </Route>
                 <Route path="/settings/edit-profile" element={
                     <ProtectedRoute>
