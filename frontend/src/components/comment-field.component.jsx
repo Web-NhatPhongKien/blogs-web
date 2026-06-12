@@ -3,6 +3,7 @@ import { useAuth } from "../context/auth.context";
 import { BlogContext } from "../pages/blog.page";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { getAuthConfig } from "../common/auth-config";
 
 const CommentField = ({ action, index = undefined, replyingTo = undefined, setReplying }) => {
     
@@ -37,11 +38,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             blog_author,
             comment,
             replying_to: replyingTo
-        }, {
-            headers: {
-                'Authorization': `Bearer ${access_token}`
-            }
-        })
+        }, getAuthConfig())
         .then(({ data }) => {
             setComment("");
 
