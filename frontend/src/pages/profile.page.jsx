@@ -1,15 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import BlogPostCard from "../components/blog-post.component";
+import Loader from "../components/loader.component";
+import NoDataMessage from "../components/nodata.component";
+import Pagination from "../components/pagination.component";
+import { filterPaginationData } from "../common/filter-pagination-data";
 import "../index.css";
-import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [query, setQuery] = useState("");
   const [blogs, setBlogs] = useState(null);
+  const [query, setQuery] = useState("");
   const [drafts, setDrafts] = useState(null);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
 
   if (!user) {
     return (
@@ -24,15 +36,16 @@ const Profile = () => {
     );
   }
 
-  const personalInfo = user.personal_info;
-  const socialLinks = user.social_links;
-  const accountInfo = user.account_info;
+  const personalInfo = user.personal_info || {};
+  const socialLinks = user.social_links || {};
+  const accountInfo = user.account_info || {};
 
   const username = personalInfo.username || "Unknown user";
   const email = personalInfo.email || "";
   const bio = personalInfo.bio || "Chưa có mô tả cá nhân.";
   const profileImg = personalInfo.profile_img;
   const role = user.role || "user";
+  const userId = user._id;
 
   const totalPosts = accountInfo.total_posts || 0;
   const totalReads = accountInfo.total_reads || 0;
@@ -41,10 +54,37 @@ const Profile = () => {
     ? new Date(user.joinedAt).toLocaleDateString("vi-VN")
     : "Chưa rõ";
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const fetchUserBlogs = ({ page = 1 } = {}) => {
+    if (!userId) {
+      setBlogs({ results: [], page: 1, totalDocs: 0, totalPages: 0 });
+      return;
+    }
+
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
+        author: userId,
+        page,
+      })
+      .then(({ data }) => {
+        const formattedData = filterPaginationData({
+          data: data.blogs,
+          page: data.page,
+          totalDocs: data.totalDocs,
+          totalPages: data.totalPages,
+          limit: data.limit,
+        });
+
+        setBlogs(formattedData);
+      })
+      .catch((err) => {
+        console.log(err);
+        setBlogs({ results: [], page: 1, totalDocs: 0, totalPages: 0 });
+      });
   };
+
+  useEffect(() => {
+    fetchUserBlogs({ page: 1 });
+  }, [userId]);
 
   
 
@@ -66,17 +106,18 @@ const Profile = () => {
             console.log("Search:", searchQuery);
         }
     }
-
+    
+  
   return (
     <section className="profile-page">
       <div className="profile-layout">
         {/* CỘT PHẢI */}
         <aside className="profile-sidebar">
           <div className="profile-sidebar-sticky">
-            <img
-              src={profileImg}
-              alt={username}
-              className="profile-avatar"
+            <img 
+              src={profileImg} 
+              alt={username} 
+              className="profile-avatar" 
             />
 
             <h2>{username}</h2>
@@ -134,24 +175,24 @@ const Profile = () => {
             </div>
 
             <div className="profile-actions">
-              <Link
-                to="/settings/edit-profile"
+              <Link 
+                to="/settings/edit-profile" 
                 className="profile-btn profile-btn-dark"
               >
                 Edit profile
               </Link>
 
               {role === "admin" && (
-                <Link
-                  to="/admin"
+                <Link 
+                  to="/admin" 
                   className="profile-btn profile-btn-light"
                 >
                   Admin dashboard
                 </Link>
               )}
 
-              <button
-                onClick={handleLogout}
+              <button 
+                onClick={handleLogout} 
                 className="profile-btn profile-btn-light"
               >
                 Logout
@@ -171,6 +212,25 @@ const Profile = () => {
             </div>
           </div>
 
+          <div className="profile-post-list">
+            {blogs == null ? (
+              <Loader />
+            ) : blogs.results.length ? (
+              <>
+                {blogs.results.map((blog) => (
+                  <BlogPostCard
+                    key={blog.blog_id}
+                    content={blog}
+                    author={blog.author.personal_info}
+                  />
+                ))}
+
+                <Pagination state={blogs} fetchDataFun={fetchUserBlogs} />
+              </>
+            ) : (
+              <NoDataMessage message="No blogs published" />
+            )}
+          </div>
           {/* Bỏ phần load bài vì teammate làm */}
           <div className="profile-post-placeholder">
             <h1 className="">Blogs</h1>

@@ -167,6 +167,7 @@ class BlogController {
             next(err);
         }
     };
+
 }
 
 export default new BlogController();

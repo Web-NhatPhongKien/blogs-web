@@ -41,6 +41,10 @@ const List = ({ style, items }) => {
 
 const BlogContent = ({ block }) => {
 
+    if (!block?.type || !block?.data) {
+        return null;
+    }
+
     let { type, data } = block;
 
     if (type === "paragraph") {
@@ -55,7 +59,7 @@ const BlogContent = ({ block }) => {
     }
 
     if (type === "image") {
-        return <Image url={data.file.url} caption={data.caption} />;
+        return <Image url={data.file?.url} caption={data.caption || ""} />;
     }
 
     if (type === "quote") {
@@ -63,10 +67,10 @@ const BlogContent = ({ block }) => {
     }
 
     if (type === "list") {
-        return <List style={data.style} items={data.items} />;
+        return <List style={data.style} items={data.items || []} />;
     }
 
-    return <h1>this is a block</h1>;
+    return null;
 };
 
 export default BlogContent;

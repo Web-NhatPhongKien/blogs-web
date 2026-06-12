@@ -4,7 +4,7 @@ import { useAuth } from '../context/auth.context';
 export default function ProtectedRoute({
   children,
 }) {
-  const user = useAuth();
+  const { user } = useAuth();
 
   return user ? (
     children
