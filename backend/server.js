@@ -16,6 +16,8 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
 import userRoutes from "./routes/user.route.js"; // THÊM
+import adminRoutes from "./routes/admin.route.js";
+import notificationRoutes from "./routes/notification.route.js"; // THÊM: notification
 
 const server = express();
 
@@ -51,6 +53,9 @@ server.post("/create-blog", verifyToken, BlogController.createBlog);
   //routes
 server.use('/api/auth', authRoutes);
 server.use("/api/user", userRoutes); // THÊM: dùng cho sửa profile và đổi mật khẩu
+server.use("/api/admin", adminRoutes);
+server.use("/api/notifications", notificationRoutes); // THÊM: notification
+
 
 server.listen(process.env.PORT, () => {
   console.log('Listening on port ' + process.env.PORT);

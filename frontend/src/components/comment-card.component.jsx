@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import CommentField from "./comment-field.component";
 import { BlogContext } from "../pages/blog.page";
 import axios from "axios";
+import { getAuthConfig } from "../common/auth-config";
 
 const CommentCard = ({ index, leftVal, commentData }) => {
 
@@ -118,9 +119,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
         const button = e.currentTarget;
         button.setAttribute("disabled", true);
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment", { _id }, {
-            headers: { 'Authorization': `Bearer ${access_token}` }
-        })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment", { _id }, getAuthConfig())
         .then(() => {
             const idsToRemove = collectDescendantIds(_id, comments.results);
             idsToRemove.add(getId(_id));

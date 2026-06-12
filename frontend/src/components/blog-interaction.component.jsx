@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
+import { getAuthConfig } from "../common/auth-config";
 
 const BlogInteraction = () => {
     let { 
@@ -37,11 +38,7 @@ const BlogInteraction = () => {
             setBlog({ ...blog, activity: { ...activity, total_likes } });
 
 
-            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/like-blog", { _id, isLikedByUser }, {
-                headers: {
-                    'Authorization': `Bearer ${access_token}`
-                }
-            })
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/like-blog", { _id, isLikedByUser }, getAuthConfig())
             .then(({ data }) => {
                 console.log(data);
             })

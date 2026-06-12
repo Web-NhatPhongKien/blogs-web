@@ -64,10 +64,13 @@ class CommentService {
             notificationObj.replied_on_comment = replying_to;
         }
 
-        const saveNotifTask = new Notification(notificationObj).save();
-        dbTasks.push(saveNotifTask);
+        if (user_id.toString() !== notificationFor.toString()) {
+            const saveNotifTask = new Notification(notificationObj).save();
+            dbTasks.push(saveNotifTask);
+        }
 
         await Promise.all(dbTasks);
+
 
         return {
             comment: savedComment.comment,

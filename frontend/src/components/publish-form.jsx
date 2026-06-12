@@ -5,6 +5,7 @@ import Tag from "./tags.components";
 import axios from "axios";
 import Loader from "./loader.component";
 import { useNavigate } from "react-router-dom";
+import { getAuthConfig } from "../common/auth-config";
 
 
 const PublishForm = () => {
@@ -84,13 +85,7 @@ const PublishForm = () => {
 
         let blogObj = { title, banner, des, content, tags, draft: false };
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog",
-            blogObj, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        )
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog", blogObj, getAuthConfig())
         .then(({ data }) => {
         console.log("Publish success:", data);
 

@@ -6,6 +6,7 @@ import User from "../schemas/user.schema.js";
 import Blog from "../schemas/blog.schema.js";
 
 
+
 class BlogController {
     getLatestBlogs = async (req, res) => {
         try {

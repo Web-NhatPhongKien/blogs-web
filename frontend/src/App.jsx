@@ -16,6 +16,8 @@ import AdminDashboard from "./pages/admin/admin-dashboard.page";
 import AdminUsers from "./pages/admin/admin-users.page";
 import AdminBlogs from "./pages/admin/admin-blogs.page";
 import AdminTags from "./pages/admin/admin-tags.page";
+import NotificationPage from "./pages/notification.page"; 
+
 
 const App = () => {
     return (
@@ -65,7 +67,16 @@ const App = () => {
                 <Route path="search/:query" element={<SearchPage />} />
                 <Route path="user/:id" element={<Profile />} />
                 <Route path="blog/:blog_id" element={<BlogPage />} />
+                <Route
+                    path="notifications"
+                    element={
+                        <ProtectedRoute>
+                            <NotificationPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="*" element={<PageNotFound />} />
+
             </Route>
         </Routes>
     );
