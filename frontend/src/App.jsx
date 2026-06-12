@@ -14,6 +14,7 @@ import EditProfile from "./pages/edit-profile.page";
 import { Toaster } from "react-hot-toast";
 import BlogPage from "./pages/blog.page";
 
+
 const App = () => {
     return (
         <Routes>
@@ -26,8 +27,9 @@ const App = () => {
                     <ProtectedRoute>
                         <Dashboard />
                     </ProtectedRoute>
-                }
-                />
+                }>
+                </Route>
+                
                 <Route path="/profile" element={
                     <ProtectedRoute>
                         <Profile />
