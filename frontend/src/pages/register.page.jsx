@@ -1,69 +1,152 @@
 import { useState } from 'react';
 import API from '../services/authApi.service';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function Register() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [form, setForm] =
-    useState({ username: '', email: '', password: '' });
+    const [form, setForm] = useState({
+        username: '',
+        email: '',
+        password: ''
+    });
 
+    const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        });
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await API.post('/register', form);
-    alert('Register success');
-    navigate('/login');
-  };
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
 
-  return (
-    <section className="auth-section">
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h1 className="auth-title">Join with us</h1>
+    const validateForm = () => {
+        const username = form.username.trim();
+        const email = form.email.trim();
+        const password = form.password.trim();
 
-        <div className="input-group">
-          <input
-            name="username"
-            type="text"
-            placeholder="Username"
-            className="input-box"
-            onChange={handleChange}
-          />
-          <i className="fi fi-rr-user input-icon"></i>
-        </div>
+        if (!username) {
+            toast.error('Vui lòng nhập username');
+            return false;
+        }
 
-        <div className="input-group">
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className="input-box"
-            onChange={handleChange}
-          />
-          <i className="fi fi-rr-envelope input-icon"></i> {/* Icon email [10] */}
-        </div>
+        if (username.length < 3) {
+            toast.error('Username phải có ít nhất 3 ký tự');
+            return false;
+        }
 
-        <div className="input-group">
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            className="input-box"
-            onChange={handleChange}
-          />
-          <i className="fi fi-rr-key input-icon"></i> {/* Icon chìa khóa [10] */}
-        </div>
+        if (!email) {
+            toast.error('Vui lòng nhập email');
+            return false;
+        }
 
-        <button className="btn-dark" type="submit">Sign Up</button>
-        <p className="auth-link">
-          You have an account ?
-          <a href="/login">Welcome back</a>
-        </p>
-      </form>
-    </section>
-  );
+        if (!isValidEmail(email)) {
+            toast.error('Email không đúng định dạng');
+            return false;
+        }
+
+        if (!password) {
+            toast.error('Vui lòng nhập mật khẩu');
+            return false;
+        }
+
+        if (password.length < 6) {
+            toast.error('Mật khẩu phải có ít nhất 6 ký tự');
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        try {
+            setLoading(true);
+
+            const payload = {
+                username: form.username.trim(),
+                email: form.email.trim().toLowerCase(),
+                password: form.password
+            };
+
+            await API.post('/register', payload);
+
+            toast.success('Đăng ký thành công');
+
+            navigate('/login');
+        } catch (err) {
+            const message =
+                err?.response?.data?.error ||
+                err?.response?.data?.message ||
+                'Đăng ký thất bại';
+
+            toast.error(message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <section className="auth-section">
+            <form onSubmit={handleSubmit} className="auth-form">
+                <h1 className="auth-title">Join with us</h1>
+
+                <div className="input-group">
+                    <input
+                        name="username"
+                        type="text"
+                        placeholder="Username"
+                        className="input-box"
+                        value={form.username}
+                        onChange={handleChange}
+                        autoComplete="username"
+                    />
+                    <i className="fi fi-rr-user input-icon"></i>
+                </div>
+
+                <div className="input-group">
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Email"
+                        className="input-box"
+                        value={form.email}
+                        onChange={handleChange}
+                        autoComplete="email"
+                    />
+                    <i className="fi fi-rr-envelope input-icon"></i>
+                </div>
+
+                <div className="input-group">
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        className="input-box"
+                        value={form.password}
+                        onChange={handleChange}
+                        autoComplete="new-password"
+                    />
+                    <i className="fi fi-rr-key input-icon"></i>
+                </div>
+
+                <button className="btn-dark" type="submit" disabled={loading}>
+                    {loading ? 'Signing Up...' : 'Sign Up'}
+                </button>
+
+                <p className="auth-link">
+                    You have an account?{' '}
+                    <Link to="/login">Welcome back</Link>
+                </p>
+            </form>
+        </section>
+    );
 }
