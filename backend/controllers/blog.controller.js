@@ -10,19 +10,12 @@ import Blog from "../schemas/blog.schema.js";
 class BlogController {
     getLatestBlogs = async (req, res) => {
         try {
-            const page = Number(req.body.page) || 1;
-            const maxLimit = 2;
+            const { page } = req.body;
+            const maxLimit = 10;
 
             const blogs = await BlogService.getLatestBlogsService(page, maxLimit);
-            const totalDocs = await BlogService.getAllLatestBlogsCountService();
             
-            return res.status(200).json({
-                blogs,
-                page,
-                limit: maxLimit,
-                totalDocs,
-                totalPages: Math.ceil(totalDocs / maxLimit)
-            });
+            return res.status(200).json({ blogs });
         } catch (err) {
             console.error("Lỗi khi lấy latest blogs:", err);
             return res.status(500).json({ error: err.message });
@@ -44,9 +37,7 @@ class BlogController {
 
     searchBlogs = async (req, res, next) => {
         try {
-            const { tag, query, author, eliminate_blog } = req.body;
-            const page = Number(req.body.page) || 1;
-            const limit = Number(req.body.limit) || 5;
+            const { tag, query, author, page, limit, eliminate_blog } = req.body;
 
             const blogs = await BlogService.searchBlogsService({
                 tag, 
@@ -56,15 +47,8 @@ class BlogController {
                 limit, 
                 eliminate_blog
             });
-            const totalDocs = await BlogService.getSearchBlogsCountService({ tag, query, author });
 
-            return res.status(200).json({
-                blogs,
-                page,
-                limit,
-                totalDocs,
-                totalPages: Math.ceil(totalDocs / limit)
-            });
+            return res.status(200).json({ blogs });
         } catch (err) {
             next(err);
         }
@@ -111,22 +95,26 @@ class BlogController {
             if (!title.length) {
                 return res.status(403).json({ error: "You must provide a title" });
             }
-
-            if (!des.length || des.length > 200) {
+            
+            if (!draft){
+                if (!des.length || des.length > 200) {
                 return res.status(403).json({ error: "You must provide blog descriptiom under 200 character" });
+                }
+
+                if (!banner.length) {
+                    return res.status(403).json({ error: "You must provide blog banner" });
+                }
+
+                if (!content?.blocks?.length) {
+                    return res.status(403).json({ error: "You must provide blog content" });
+                }
+
+                if (!tags.length || tags.length > 10) {
+                    return res.status(403).json({ error: "You must provide tags in order, Maximum 10" });
+                }
             }
 
-            if (!banner.length) {
-                return res.status(403).json({ error: "You must provide blog banner" });
-            }
-
-            if (!content?.blocks?.length) {
-                return res.status(403).json({ error: "You must provide blog content" });
-            }
-
-            if (!tags.length || tags.length > 10) {
-                return res.status(403).json({ error: "You must provide tags in order, Maximum 10" });
-            }
+            
 
             tags = tags.map(tag => tag.toLowerCase());
 
@@ -167,8 +155,7 @@ class BlogController {
                 error: "Internal server error"
             });
         }
-    }
-
+    };
     likeBlog = async (req, res, next) => {
         try {
             const user_id = req.user.userId; 
@@ -181,6 +168,7 @@ class BlogController {
             next(err);
         }
     };
+
 }
 
 export default new BlogController();

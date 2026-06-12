@@ -22,11 +22,7 @@ import NotificationPage from "./pages/notification.page";
 const App = () => {
     return (
         <Routes>
-            <Route path="/" element={<Navbar />}>
-                <Route index element={<HomePage />} />
-                <Route path="register" element={<Register />} />
-                <Route path="login" element={<Login />} />
-                <Route
+            <Route
                     path="editor"
                     element={
                         <ProtectedRoute>
@@ -34,6 +30,11 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
+            <Route path="/" element={<Navbar />}>
+                <Route index element={<HomePage />} />
+                <Route path="register" element={<Register />} />
+                <Route path="login" element={<Login />} />
+                
                 <Route
                     path="profile"
                     element={
@@ -79,6 +80,6 @@ const App = () => {
             </Route>
         </Routes>
     );
-};
+}
 
 export default App;

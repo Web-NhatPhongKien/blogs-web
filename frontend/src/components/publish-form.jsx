@@ -79,7 +79,6 @@ const PublishForm = () => {
             return toast.error("Write blog tags before publishing")
         }
 
-        // 1. Khóa nút và hiện Loading Toast đúng chuẩn
         e.target.classList.add('disable');
 
         const loadingToast = toast.loading("Publishing...");
@@ -100,6 +99,8 @@ const PublishForm = () => {
         })
         .catch((err) => {
             console.log("Publish error:", err.response?.data || err.message);
+
+            e.target.classList.remove("disable");
 
             toast.error(err.response?.data?.error || "Something went wrong", {
                 id: loadingToast
