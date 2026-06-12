@@ -4,6 +4,9 @@ import BlogEditor from "./blog.editor";
 import userSchema from "../../../backend/schemas/user.schema";
 import PublishForm from "../components/publish-form"
 import { useAuth } from "../context/auth.context";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
+
 
 const blogStructure = {
     title:'',
@@ -24,19 +27,37 @@ const Editor = () => {
     const { user } = useAuth();
     const [textEditor, setTextEditor] = useState({ _isReady: false });
 
+    
+
+    let token = sessionStorage.getItem("token");
+    let {blog_id} = useParams();
+
     useEffect(() => {
 
-        if (!user) {
-            return navigate("/login");
+        if(!blog_id){
+            return setLoading(false)
         }
 
-        setLoading(false);
-    }, [user,navigate]);
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog",{
+            blog_id, draft: true, mode: 'edit'
+        })
+        .then(({data: {blog}})  => {
+            setBlog(blog);
+            setLoading(false);
+        })
+        .catch(err => {
+            setBlog(null);
+            setLoading(false);
+        })
+  
+    }, []);
 
     return (
         <>
             <editorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor}}>
                 {
+                
+                token == null? <Navigate to="login" />:
                 loading ? <p className="text-center mt-20" >Loading...</p> :
                 editorState === "editor" ? 
                     <BlogEditor setEditorState={setEditorState}/> 

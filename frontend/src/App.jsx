@@ -28,6 +28,14 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
+            <Route
+                    path="editor/:blog_id"
+                    element={
+                        <ProtectedRoute>
+                            <Editor />
+                        </ProtectedRoute>
+                    }
+                />
             <Route path="/" element={<Navbar />}>
                 <Route index element={<HomePage />} />
                 <Route path="register" element={<Register />} />

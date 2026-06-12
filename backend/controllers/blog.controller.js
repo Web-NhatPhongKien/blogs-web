@@ -6,6 +6,7 @@ import User from "../schemas/user.schema.js";
 import Blog from "../schemas/blog.schema.js";
 
 
+
 class BlogController {
     getLatestBlogs = async (req, res) => {
         try {
@@ -167,7 +168,39 @@ class BlogController {
             next(err);
         }
     };
+    userWrittenBlogs = async (req, res, next) =>{
+        let user_id  = req.user.userId;
+        let { page, draft, query, deletedDocCount } = req.body;
 
+        let maxLimit = 5;
+        let skipDocs = (page - 1) * maxLimit;
+        if (deletedDocCount) {
+            skipDocs -= deletedDocCount;
+        }
+        Blog.find({ author: user_id, draft, title: new RegExp(query, "i") })
+        .skip(skipDocs)
+        .limit(maxLimit)
+        .sort({publishedAt: -1 })
+        .select("title banner publishedAt blog_id activity des draft -_id")
+        .then(blogs => {
+            return res.status(200).json({blogs})
+        })
+        .catch(err => {
+            return res.status(500).json({error: err.message })
+        })
+    }
+    userWrittenBlogsCount = async (req, res, next) => {
+        let user_id  = req.user.userId;
+        let {draft, query } = req.body;
+        Blog.countDocuments({author: user_id, draft, title: new RegExp(query, "i") })
+        .then(count => {
+            return res.status(200).json({ totalDocs: count})
+        })
+        .catch( err => {
+            console.log(err.message);
+            return res.status(500).json({ error: err.message});
+        })
+    }
 }
 
 export default new BlogController();

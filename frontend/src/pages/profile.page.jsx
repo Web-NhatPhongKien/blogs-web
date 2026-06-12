@@ -1,21 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import BlogPostCard from "../components/blog-post.component";
-import Loader from "../components/loader.component";
-import NoDataMessage from "../components/nodata.component";
-import Pagination from "../components/pagination.component";
-import { filterPaginationData } from "../common/filter-pagination-data";
+import BlogsManage from "./manage-blogs.page";
 import "../index.css";
-import { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [blogs, setBlogs] = useState(null);
-  const [query, setQuery] = useState("");
-  const [drafts, setDrafts] = useState(null);
 
   const handleLogout = () => {
     logout();
@@ -54,58 +44,6 @@ const Profile = () => {
     ? new Date(user.joinedAt).toLocaleDateString("vi-VN")
     : "Chưa rõ";
 
-  const fetchUserBlogs = ({ page = 1 } = {}) => {
-    if (!userId) {
-      setBlogs({ results: [], page: 1, totalDocs: 0, totalPages: 0 });
-      return;
-    }
-
-    axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
-        author: userId,
-        page,
-      })
-      .then(({ data }) => {
-        const formattedData = filterPaginationData({
-          data: data.blogs,
-          page: data.page,
-          totalDocs: data.totalDocs,
-          totalPages: data.totalPages,
-          limit: data.limit,
-        });
-
-        setBlogs(formattedData);
-      })
-      .catch((err) => {
-        console.log(err);
-        setBlogs({ results: [], page: 1, totalDocs: 0, totalPages: 0 });
-      });
-  };
-
-  useEffect(() => {
-    fetchUserBlogs({ page: 1 });
-  }, [userId]);
-
-  
-
-
-    const handleChange = (e) => {
-        if(!e.target.value.length){
-            setQuery("");
-            setBlogs(null);
-            setDrafts(null)
-
-        }
-    }
-    
-    const handleSearch = (e) => {
-        let searchQuery = e.target.value;
-
-        setQuery(searchQuery);
-        if(e.keyCode == 13 && searchQuery.length){
-            console.log("Search:", searchQuery);
-        }
-    }
     
   
   return (
@@ -203,61 +141,7 @@ const Profile = () => {
 
         {/* CỘT TRÁI */}
         <main className="profile-main">
-          <div className="profile-header">
-            <h1>{username}</h1>
-
-            <div className="profile-tabs">
-              <button className="active">Home</button>
-              <button>About</button>
-            </div>
-          </div>
-
-          <div className="profile-post-list">
-            {blogs == null ? (
-              <Loader />
-            ) : blogs.results.length ? (
-              <>
-                {blogs.results.map((blog) => (
-                  <BlogPostCard
-                    key={blog.blog_id}
-                    content={blog}
-                    author={blog.author.personal_info}
-                  />
-                ))}
-
-                <Pagination state={blogs} fetchDataFun={fetchUserBlogs} />
-              </>
-            ) : (
-              <NoDataMessage message="No blogs published" />
-            )}
-          </div>
-          {/* Bỏ phần load bài vì teammate làm */}
-          <div className="profile-post-placeholder">
-            <h1 className="">Blogs</h1>
-            <Toaster />
-
-            <div className="relative max-md:mt-5 md:mt-8 mb-10">
-                <input type="search" placeholder="Search Blogs" className="w-full bg-grey p-4 pl-12 pr-6 rounded-full"
-                onChange={handleChange}
-                onKeyDown={handleSearch}
-                />
-                <i className="fi fi-rr-search absolute  md:left-5 top-1/2 -translate-y-1/2"></i>
-            </div>
-
-            {/* <div className="profile-about-info">
-              <p>
-                <span>Email:</span> {email}
-              </p>
-
-              <p>
-                <span>Role:</span> {role}
-              </p>
-
-              <p>
-                <span>Joined:</span> {joinedAt}
-              </p>
-            </div> */}
-          </div>
+          <BlogsManage userId={userId} />
         </main>
       </div>
     </section>

@@ -16,6 +16,7 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
 import userRoutes from "./routes/user.route.js"; // THÊM
+import blogController from "./controllers/blog.controller.js";
 
 const server = express();
 
@@ -47,7 +48,8 @@ server.post("/get-replies-comments", CommentController.getRepliesComments);
 server.post("/delete-comment", verifyToken, CommentController.deleteComment);
 
 server.post("/create-blog", verifyToken, BlogController.createBlog);
-
+server.post("/user-written-blogs", verifyToken, BlogController.userWrittenBlogs);
+server.post("/user-written-blogs-count",verifyToken, BlogController.userWrittenBlogsCount)
   //routes
 server.use('/api/auth', authRoutes);
 server.use("/api/user", userRoutes); // THÊM: dùng cho sửa profile và đổi mật khẩu
