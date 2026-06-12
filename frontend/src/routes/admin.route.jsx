@@ -2,8 +2,12 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 
 const AdminRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
+   if (loading) {
+    return <div style={{ padding: "40px" }}>Đang kiểm tra quyền admin...</div>;
+  }
+  
   if (!user) {
     return <Navigate to="/login" replace />;
   }
