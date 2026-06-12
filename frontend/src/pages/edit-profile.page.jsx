@@ -131,17 +131,12 @@ const EditProfile = () => {
     const updateLocalUser = (updatedUser) => {
         if (!updatedUser) return;
 
-        // Nếu auth.context có setUser thì cập nhật trực tiếp context
+        //cập nhật trực tiếp context
         if (typeof setUser === "function") {
             setUser(updatedUser);
         }
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
 
-        // Cập nhật localStorage nếu project đang lưu user ở đây
-        const oldUser = localStorage.getItem("user");
-
-        if (oldUser) {
-            localStorage.setItem("user", JSON.stringify(updatedUser));
-        }
     };
 
     const handleSubmit = async (e) => {
