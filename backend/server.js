@@ -7,7 +7,6 @@ import UserController from "./controllers/user.controller.js";
 import CommentController from "./controllers/comment.controller.js";
 import { verifyToken, verifyTokenOptional } from "./middlewares/auth.middleware.js";
 
-
 dotenv.config();
 
 import express from 'express';
@@ -17,7 +16,6 @@ import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
 import userRoutes from "./routes/user.route.js"; // THÊM
-import adminRoutes from "./routes/admin.route.js";
 
 const server = express();
 
@@ -40,7 +38,6 @@ server.post("/search-users", UserController.searchUsers);
 
 server.post("/all-latest-blogs-count", BlogController.getAllLatestBlogsCount);
 server.post("/search-blogs-count", BlogController.getSearchBlogsCount);
-server.post("/create-blog", verifyToken, BlogController.createBlog);
 
 server.post("/like-blog", verifyToken, BlogController.likeBlog);
 
@@ -49,11 +46,11 @@ server.post("/get-blog-comments", CommentController.getBlogComments);
 server.post("/get-replies-comments", CommentController.getRepliesComments);
 server.post("/delete-comment", verifyToken, CommentController.deleteComment);
 
+server.post("/create-blog", verifyToken, BlogController.createBlog);
+
   //routes
 server.use('/api/auth', authRoutes);
 server.use("/api/user", userRoutes); // THÊM: dùng cho sửa profile và đổi mật khẩu
-server.use("/api/admin", adminRoutes);
-
 
 server.listen(process.env.PORT, () => {
   console.log('Listening on port ' + process.env.PORT);
