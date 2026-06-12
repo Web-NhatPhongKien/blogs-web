@@ -64,7 +64,7 @@ const Navbar = () => {
     return (
         <>
             <nav className="navbar">
-                <Link to="/" className="flex-none w-10">
+                <Link to="/" className="flex-none w-20">
                     <img src={logo} className="w-full" />
                 </Link>
 
