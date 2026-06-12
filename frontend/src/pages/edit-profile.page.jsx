@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 import toast from "react-hot-toast";
 import "../index.css";
+
 
 const SERVER_DOMAIN =
     import.meta.env.VITE_SERVER_DOMAIN || "http://localhost:3000";
@@ -262,6 +263,46 @@ const EditProfile = () => {
         );
     }
 
+    const avatarInputRef = useRef(null);
+
+    const handleAvatarImg = async (e) => {
+        let file = e.target.files[0];
+
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+
+            setForm((prev) => ({
+                ...prev,
+                profile_img: previewUrl
+            }));
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", "mn9huksh");
+            formData.append("cloud_name", "dj5mxvmtm");
+
+            try {
+                const res = await fetch("https://api.cloudinary.com/v1_1/dj5mxvmtm/image/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.secure_url) {
+                    setForm((prev) => ({
+                        ...prev,
+                        profile_img: data.secure_url
+                    }));
+
+                    console.log("Upload avatar thành công!", data.secure_url);
+                }
+            } catch (err) {
+                console.error("Lỗi khi upload avatar:", err);
+            }
+        }
+    };
+
     return (
         <section className="edit-profile-page">
             <div className="edit-profile-container">
@@ -275,14 +316,23 @@ const EditProfile = () => {
 
                 <form className="edit-profile-form" onSubmit={handleSubmit}>
                     <div className="edit-profile-preview">
-                        <img
-                            src={
-                                form.profile_img ||
-                                "https://api.dicebear.com/6.x/fun-emoji/svg?seed=user"
-                            }
-                            alt={form.username || "avatar"}
-                            className="edit-profile-avatar"
-                        />
+                        <label htmlFor="uploadAvatar" className="cursor-pointer">
+                            <img
+                                src={
+                                    form.profile_img ||
+                                    "https://api.dicebear.com/6.x/fun-emoji/svg?seed=user"
+                                }
+                                alt={form.username || "avatar"}
+                                className="edit-profile-avatar"
+                            />
+                            <input
+                                id="uploadAvatar"
+                                type="file"
+                                accept=".png, .jpg, .jpeg, .webp"
+                                hidden
+                                onChange={handleAvatarImg}
+                            />
+                        </label>
 
                         <div className="edit-profile-preview-info">
                             <h2>{form.username || "Username"}</h2>

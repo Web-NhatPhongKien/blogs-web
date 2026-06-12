@@ -8,16 +8,20 @@ import NoDataMessage from "../components/nodata.component";
 import Pagination from "../components/pagination.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import "../index.css";
+import { Toaster } from "react-hot-toast";
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState(null);
+  const [query, setQuery] = useState("");
+  const [drafts, setDrafts] = useState(null);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
 
   if (!user) {
     return (
@@ -82,6 +86,28 @@ const Profile = () => {
     fetchUserBlogs({ page: 1 });
   }, [userId]);
 
+  
+
+
+    const handleChange = (e) => {
+        if(!e.target.value.length){
+            setQuery("");
+            setBlogs(null);
+            setDrafts(null)
+
+        }
+    }
+    
+    const handleSearch = (e) => {
+        let searchQuery = e.target.value;
+
+        setQuery(searchQuery);
+        if(e.keyCode == 13 && searchQuery.length){
+            console.log("Search:", searchQuery);
+        }
+    }
+    
+  
   return (
     <section className="profile-page">
       <div className="profile-layout">
@@ -205,13 +231,20 @@ const Profile = () => {
               <NoDataMessage message="No blogs published" />
             )}
           </div>
+          {/* Bỏ phần load bài vì teammate làm */}
+          <div className="profile-post-placeholder">
+            <h1 className="">Blogs</h1>
+            <Toaster />
 
-          <div className="profile-about">
-            <h2>About {username}</h2>
+            <div className="relative max-md:mt-5 md:mt-8 mb-10">
+                <input type="search" placeholder="Search Blogs" className="w-full bg-grey p-4 pl-12 pr-6 rounded-full"
+                onChange={handleChange}
+                onKeyDown={handleSearch}
+                />
+                <i className="fi fi-rr-search absolute  md:left-5 top-1/2 -translate-y-1/2"></i>
+            </div>
 
-            <p className="profile-about-text">{bio}</p>
-
-            <div className="profile-about-info">
+            {/* <div className="profile-about-info">
               <p>
                 <span>Email:</span> {email}
               </p>
@@ -223,7 +256,7 @@ const Profile = () => {
               <p>
                 <span>Joined:</span> {joinedAt}
               </p>
-            </div>
+            </div> */}
           </div>
         </main>
       </div>
