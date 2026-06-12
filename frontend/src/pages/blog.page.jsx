@@ -26,6 +26,18 @@ export const blogStructure = {
 
 export const BlogContext = createContext({ });
 
+const getContentBlocks = (content) => {
+    if (Array.isArray(content)) {
+        if (content.length === 1 && Array.isArray(content[0]?.blocks)) {
+            return content[0].blocks;
+        }
+
+        return content;
+    }
+
+    return Array.isArray(content?.blocks) ? content.blocks : [];
+};
+
 const BlogPage = () => {
 
     let { blog_id } = useParams();
@@ -42,7 +54,7 @@ const BlogPage = () => {
         title, content, banner, publishedAt, 
         author: { personal_info: { fullname, username: author_username, profile_img } } 
     } = blog;
-    const contentBlocks = Array.isArray(content) ? content : content?.blocks || [];
+    const contentBlocks = getContentBlocks(content);
 
     const fetchBlog = () => {
         const access_token = sessionStorage.getItem("token");

@@ -20,8 +20,8 @@ const blogSchema = new Schema({
         // required: true
     },
     content: {
-        type: [],
-        //required: true
+        type: Schema.Types.Mixed,
+        default: () => ({ blocks: [] })
     },
     tags: {
         type: [String],
