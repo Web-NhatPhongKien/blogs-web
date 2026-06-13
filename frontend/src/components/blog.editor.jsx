@@ -1,5 +1,5 @@
 import logo from "../imgs/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
 import React, { useContext, useEffect,useRef } from "react";
 import { editorContext } from "./editor.pages";
@@ -15,7 +15,8 @@ const BlogEditor = () => {
     const editorInstanceRef = useRef(null);
     let token = sessionStorage.getItem("token");
     const navigate = useNavigate();
-
+    let {blog_id} = useParams();
+ 
     useEffect(() =>{
         if (editorInstanceRef.current) return;
         let editor = new EditorJS({
@@ -98,7 +99,7 @@ const BlogEditor = () => {
         };
     }
 
-    const handleSaveDraft = (e) => {
+    const handleSaveDraft = async (e) => {
         const button = e.currentTarget;
 
         if (button.className.includes("disable")){
@@ -113,8 +114,10 @@ const BlogEditor = () => {
         button.classList.add("disable");
 
         const loadingToast = toast.loading("Saving...");
+        await textEditor.isReady;
+        const savedContent = await textEditor.save();
 
-        let blogObj = { title, banner, des, content, tags, draft: true };
+        let blogObj = { title, banner, des, content: savedContent, tags, draft: true, id: blog_id || blog.blog_id };
 
         axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog",
             blogObj, {

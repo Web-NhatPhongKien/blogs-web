@@ -1,5 +1,7 @@
 import Blog from "../schemas/blog.schema.js";
 import Notification from "../schemas/notification.schema.js";
+import BlogLike from "../schemas/blog-like.schema.js";
+
 class BlogService {
     getLatestBlogsService = async (page, maxLimit) => {
         return await Blog.find({ draft: false })
@@ -8,20 +10,19 @@ class BlogService {
             .select("blog_id title des banner activity tags publishedAt -_id")
             .skip((page - 1) * maxLimit)
             .limit(maxLimit);
-    }
+    };
 
     getTrendingBlogsService = async (maxLimit) => {
         return await Blog.find({ draft: false })
-        .populate("author", "personal_info.profile_img personal_info.username -_id")
-        .sort({ "activity.total_reads": -1, "activity.total_likes": -1, "publishedAt": -1 })
-        .select("blog_id title publishedAt -_id")
-        .limit(maxLimit);
-    }
+            .populate("author", "personal_info.profile_img personal_info.username -_id")
+            .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
+            .select("blog_id title publishedAt -_id")
+            .limit(maxLimit);
+    };
 
     searchBlogsService = async ({ tag, query, author, page, limit, eliminate_blog }) => {
         let findQuery = { draft: false };
 
-        // Xây dựng query động giống logic của bạn
         if (tag) {
             findQuery.tags = tag;
             if (eliminate_blog) findQuery.blog_id = { $ne: eliminate_blog };
@@ -33,7 +34,6 @@ class BlogService {
 
         const skipDocs = (page - 1) * limit;
 
-        // Trực tiếp trả về Promise
         if (query && !tag) {
             return await Blog.find(findQuery, { score: { $meta: "textScore" } })
                 .populate("author", "personal_info.profile_img personal_info.username -_id")
@@ -45,31 +45,28 @@ class BlogService {
 
         return await Blog.find(findQuery)
             .populate("author", "personal_info.profile_img personal_info.username -_id")
-            .sort({ publishedAt: -1 }) // Hoặc sort theo mức độ liên quan tùy bạn
+            .sort({ publishedAt: -1 })
             .select("blog_id title des banner activity tags publishedAt -_id")
             .skip(skipDocs)
             .limit(limit);
-    }
+    };
 
     getBlogService = async (blog_id, draft, mode, user_id) => {
-        const incrementVal = mode !== 'edit' ? 1 : 0; 
-    
-        // 1. Xây dựng bộ lọc tìm kiếm
+        const incrementVal = mode !== "edit" ? 1 : 0;
         const findQuery = { blog_id };
-        
-        // Nếu không phải tác giả đang edit, chỉ cho phép lấy bài đã public
-        if (draft !== 'true') {
+        const isDraft = draft === true || draft === "true";
+
+        if (!isDraft) {
             findQuery.draft = false;
         }
-        
-        // 2. Gọi DB bằng chính bộ lọc đã xây dựng
+
         const blog = await Blog.findOneAndUpdate(
-            findQuery, // SỬA LẠI Ở ĐÂY
+            findQuery,
             { $inc: { "activity.total_reads": incrementVal } },
-            { new: true } 
+            { new: true }
         )
-        .populate("author", "_id personal_info.profile_img personal_info.username")
-        .select("title des content banner activity publishedAt blog_id tags");
+            .populate("author", "_id personal_info.profile_img personal_info.username")
+            .select("title des content banner activity publishedAt blog_id tags");
 
         if (!blog) {
             return { blog: null, liked_by_user: false };
@@ -78,24 +75,32 @@ class BlogService {
         let liked_by_user = false;
 
         if (user_id) {
-            const like = await Notification.exists({
+            const like = await BlogLike.exists({
                 user: user_id,
-                blog: blog._id,
-                type: "like"
+                blog: blog._id
             });
 
-            liked_by_user = Boolean(like);
+            if (like) {
+                liked_by_user = true;
+            } else {
+                const legacyLike = await Notification.exists({
+                    user: user_id,
+                    blog: blog._id,
+                    type: "like"
+                });
+
+                liked_by_user = Boolean(legacyLike);
+            }
         }
 
         return { blog, liked_by_user };
-    }
+    };
 
     getAllLatestBlogsCountService = async () => {
         return await Blog.countDocuments({ draft: false });
-    }
+    };
 
     getSearchBlogsCountService = async ({ tag, query, author }) => {
-        // Khởi tạo điều kiện mặc định là chỉ lấy các bài đã public
         let findQuery = { draft: false };
 
         if (tag) {
@@ -110,40 +115,67 @@ class BlogService {
     };
 
     toggleLikeBlogService = async (user_id, blog_id, isLikedByUser) => {
-        const incrementVal = !isLikedByUser ? 1 : -1;
-
-        const blog = await Blog.findOneAndUpdate(
-            { _id: blog_id }, 
-            { $inc: { "activity.total_likes": incrementVal } },
-            { new: true } 
-        );
+        const blog = await Blog.findById(blog_id).select("author");
 
         if (!blog) {
-            const err = new Error("Blog không tồn tại");
+            const err = new Error("Blog khong ton tai");
             err.statusCode = 404;
             throw err;
         }
 
         if (!isLikedByUser) {
-            const likeNotification = new Notification({
-                type: "like",
-                blog: blog_id,
-                notification_for: blog.author,
-                user: user_id
-            });
-            
-            await likeNotification.save();
-            return { liked_by_user: true };
+            const likeResult = await BlogLike.updateOne(
+                {
+                    user: user_id,
+                    blog: blog_id
+                },
+                {
+                    $setOnInsert: {
+                        user: user_id,
+                        blog: blog_id
+                    }
+                },
+                { upsert: true }
+            );
+            const newLikeCreated = likeResult.upsertedCount > 0;
 
-        } else {
-            await Notification.findOneAndDelete({ 
-                user: user_id, 
-                blog: blog_id, 
-                type: "like" 
-            });
-            
-            return { liked_by_user: false };
+            if (newLikeCreated) {
+                await Blog.findByIdAndUpdate(blog_id, {
+                    $inc: { "activity.total_likes": 1 }
+                });
+            }
+
+            if (user_id.toString() !== blog.author.toString() && newLikeCreated) {
+                const likeNotification = new Notification({
+                    type: "like",
+                    blog: blog_id,
+                    notification_for: blog.author,
+                    user: user_id
+                });
+                await likeNotification.save();
+            }
+
+            return { liked_by_user: true };
         }
+
+        const deletedLike = await BlogLike.findOneAndDelete({
+            user: user_id,
+            blog: blog_id
+        });
+
+        const deletedNotification = await Notification.findOneAndDelete({
+            user: user_id,
+            blog: blog_id,
+            type: "like"
+        });
+
+        if (deletedLike || deletedNotification) {
+            await Blog.findByIdAndUpdate(blog_id, {
+                $inc: { "activity.total_likes": -1 }
+            });
+        }
+
+        return { liked_by_user: false };
     };
 }
 

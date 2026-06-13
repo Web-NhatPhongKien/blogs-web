@@ -2023,3 +2023,483 @@ input:disabled ~ .input-icon {
     padding: 10px 0 !important;
     width: 100% !important;
 }
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — BELL ICON (NAVBAR)
+───────────────────────────────────────────── */
+.notif-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+
+  font-size: 18px;
+  color: var(--color-muted);
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.notif-bell:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-red);
+
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — PAGE LAYOUT
+───────────────────────────────────────────── */
+.notification-page {
+  min-height: calc(100vh - var(--navbar-height));
+  padding: var(--space-10) 10vw;
+  background: var(--color-bg);
+}
+
+.notification-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Header */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notification-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.notification-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.notification-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-red);
+
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Nút đánh dấu tất cả đã đọc */
+.notif-mark-all-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-2) var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.notif-mark-all-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — FILTER TABS
+───────────────────────────────────────────── */
+.notification-filters {
+  display: flex;
+  gap: var(--space-1);
+
+  margin-bottom: var(--space-6);
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notification-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: var(--space-3) var(--space-5);
+
+  border: none;
+  border-bottom: 2px solid transparent;
+
+  background: transparent;
+  color: var(--color-muted);
+  font-size: var(--text-base);
+
+  cursor: pointer;
+  margin-bottom: -1px;
+
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.notification-filter-btn.active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
+  font-weight: 500;
+}
+
+.notification-filter-btn:hover:not(.active) {
+  color: var(--color-text);
+}
+
+.notification-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-red);
+
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — LIST & ITEMS
+───────────────────────────────────────────── */
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  padding: var(--space-4) var(--space-5);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.notification-item:hover {
+  background: var(--color-surface);
+}
+
+/* Trạng thái chưa đọc */
+.notification-item.unread {
+  background: rgba(139, 92, 246, 0.04);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.notification-item.unread:hover {
+  background: rgba(139, 92, 246, 0.08);
+}
+
+/* Phần trái */
+.notification-item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Avatar wrapper */
+.notification-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notification-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  object-fit: cover;
+  background: var(--color-surface);
+  display: block;
+}
+
+.notification-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+
+  color: var(--color-muted);
+  font-size: 18px;
+}
+
+/* Icon loại thông báo (góc dưới phải avatar) */
+.notification-type-icon {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+
+  font-size: 9px;
+}
+
+.notif-type-like {
+  color: var(--color-red);
+}
+
+.notif-type-comment {
+  color: var(--color-purple);
+}
+
+.notif-type-reply {
+  color: #0ea5e9;
+}
+
+/* Body nội dung thông báo */
+.notification-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-message {
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.notif-actor {
+  font-weight: 600;
+}
+
+.notif-blog-title {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.notification-comment-preview {
+  margin-top: var(--space-1);
+
+  padding: var(--space-2) var(--space-3);
+
+  border-left: 3px solid var(--color-border);
+
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.notification-time {
+  margin-top: var(--space-2);
+
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+/* Phần phải: dot chưa đọc + nút xóa */
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  flex-shrink: 0;
+}
+
+.notification-unread-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: var(--radius-pill);
+  background: var(--color-purple);
+  flex-shrink: 0;
+}
+
+.notification-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+
+  opacity: 0;
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.notification-item:hover .notification-delete-btn {
+  opacity: 1;
+}
+
+.notification-delete-btn:hover {
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — EMPTY STATE & LOAD MORE
+───────────────────────────────────────────── */
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+
+  padding: var(--space-12) 0;
+
+  text-align: center;
+}
+
+.notif-empty-icon {
+  font-size: 48px;
+  color: var(--color-border);
+}
+
+.notif-empty-msg {
+  font-size: var(--text-lg);
+  color: var(--color-muted);
+}
+
+.notif-load-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  width: 100%;
+  padding: var(--space-3);
+
+  margin-top: var(--space-4);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  color: var(--color-muted);
+  background: transparent;
+  font-size: var(--text-base);
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.notif-load-more-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION — RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .notification-page {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .notification-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .notification-delete-btn {
+    opacity: 1;
+  }
+}
+

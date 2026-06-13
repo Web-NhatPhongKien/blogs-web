@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
+import toast from "react-hot-toast";
 import "../index.css";
 
 
@@ -83,17 +84,17 @@ const EditProfile = () => {
         const username = form.username.trim();
 
         if (!username) {
-            alert("Username không được để trống");
+            toast.error("Username không được để trống");
             return false;
         }
 
         if (username.length < 3) {
-            alert("Username phải có ít nhất 3 ký tự");
+            toast.error("Username phải có ít nhất 3 ký tự");
             return false;
         }
 
         if (form.bio.length > 200) {
-            alert("Bio không được quá 200 ký tự");
+            toast.error("Bio không được quá 200 ký tự");
             return false;
         }
 
@@ -107,22 +108,22 @@ const EditProfile = () => {
             !passwordForm.newPassword ||
             !passwordForm.confirmPassword
         ) {
-            alert("Vui lòng nhập đầy đủ thông tin mật khẩu");
+            toast.error("Vui lòng nhập đầy đủ thông tin mật khẩu");
             return false;
         }
 
         if (passwordForm.newPassword.length < 6) {
-            alert("Mật khẩu mới phải có ít nhất 6 ký tự");
+            toast.error("Mật khẩu mới phải có ít nhất 6 ký tự");
             return false;
         }
 
         if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-            alert("Mật khẩu xác nhận không khớp");
+            toast.error("Mật khẩu xác nhận không khớp");
             return false;
         }
 
         if (passwordForm.currentPassword === passwordForm.newPassword) {
-            alert("Mật khẩu mới không được trùng mật khẩu hiện tại");
+            toast.error("Mật khẩu mới không được trùng mật khẩu hiện tại");
             return false;
         }
 
@@ -132,12 +133,12 @@ const EditProfile = () => {
     const updateLocalUser = (updatedUser) => {
         if (!updatedUser) return;
 
-        // Nếu auth.context có setUser thì cập nhật trực tiếp context
+        //cập nhật trực tiếp context
         if (typeof setUser === "function") {
             setUser(updatedUser);
         }
-
         sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
     };
 
     const handleSubmit = async (e) => {
@@ -151,7 +152,7 @@ const EditProfile = () => {
             const token = getToken();
 
             if (!token) {
-                alert("Bạn chưa đăng nhập hoặc token không tồn tại");
+                toast.error("Bạn chưa đăng nhập hoặc token không tồn tại");
                 return;
             }
 
@@ -184,10 +185,10 @@ const EditProfile = () => {
 
             updateLocalUser(data.user);
 
-            alert("Cập nhật profile thành công");
+            toast.success("Cập nhật profile thành công");
             navigate("/profile");
         } catch (err) {
-            alert(err.message || "Có lỗi xảy ra khi cập nhật profile");
+            toast.error(err.message || "Có lỗi xảy ra khi cập nhật profile");
         } finally {
             setLoading(false);
         }
@@ -205,7 +206,7 @@ const EditProfile = () => {
             const token = getToken();
 
             if (!token) {
-                alert("Bạn chưa đăng nhập hoặc token không tồn tại");
+                toast.error("Bạn chưa đăng nhập hoặc token không tồn tại");
                 navigate("/login");
                 return;
             }
@@ -232,7 +233,7 @@ const EditProfile = () => {
                 );
             }
 
-            alert("Đổi mật khẩu thành công");
+            toast.success("Đổi mật khẩu thành công");
 
             setPasswordForm({
                 currentPassword: "",
@@ -240,7 +241,7 @@ const EditProfile = () => {
                 confirmPassword: "",
             });
         } catch (err) {
-            alert(err.message || "Có lỗi xảy ra khi đổi mật khẩu");
+            toast.error(err.message || "Có lỗi xảy ra khi đổi mật khẩu");
         } finally {
             setPasswordLoading(false);
         }

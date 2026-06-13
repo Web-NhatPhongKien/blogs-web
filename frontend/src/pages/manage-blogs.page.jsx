@@ -7,7 +7,11 @@ import Pagination from "../components/pagination.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import { Toaster } from "react-hot-toast";
 import InPageNavigation from "../components/inpage-navigation.component";
-import UserCard from "../components/usercard.component";
+import {
+    UserCard,
+    ManageDraftBlog
+} from "../components/usercard.component";
+
 
 
 
@@ -104,7 +108,7 @@ const BlogsManage = ({ userId }) => {
             setQuery("");
             setBlogs(null);
             setDrafts(null);
-            fetchUserBlogs({ page: 1 });
+
         }
     };
 
@@ -147,7 +151,7 @@ const BlogsManage = ({ userId }) => {
                         {
                             blogs.results.map((blog , i) => {
                                 return <div key={i}>
-                                   <UserCard blog={blog} />
+                                   <UserCard blog={{...blog, index: i, setStateFunc: setBlogs}} />
                                 </div>
                             })
                         }
@@ -155,30 +159,25 @@ const BlogsManage = ({ userId }) => {
                     : <NoDataMessage message="No Published blogs"/>
                 }
 
+
+                {
+                    drafts == null ? <Loader />:
+                    drafts.results.length ? 
+                        <>
+                        {
+                            drafts.results.map((blog , i) => {
+                                return <div key={i}>
+                                   <ManageDraftBlog blog={{...blog, index: i+1, setStateFunc: setDrafts}} />
+                                </div>
+                            })
+                        }
+                        </>
+                    : <NoDataMessage message="No drafts blogs"/>
+                }
+
             </InPageNavigation>
 
-            {/* <div className="profile-post-list">
-                {blogs == null ? (
-                    <Loader />
-                ) : blogs.results.length ? (
-                    <>
-                        {blogs.results.map((blog) => (
-                            <BlogPostCard
-                                key={blog.blog_id}
-                                content={blog}
-                                author={blog.author.personal_info}
-                            />
-                        ))}
-
-                        <Pagination
-                            state={blogs}
-                            fetchDataFun={fetchUserBlogs}
-                        />
-                    </>
-                ) : (
-                    <NoDataMessage message="No blogs published" />
-                )}
-            </div> */}
+            
         </div>
         
         </>
