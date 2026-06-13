@@ -11,7 +11,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
 
     let {
         commented_by: { personal_info: { profile_image, fullname, username: commented_by_username } },
-        commentedAt, comment, _id, children
+        commentedAt, comment, _id, children, isDeleted
     } = commentData;
 
     const { user } = useAuth();
@@ -20,14 +20,15 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     let {
         blog,
         setBlog,
-        blog: { 
-            author: { personal_info: { username: blog_author } }, 
+        blog: {
+            author: { personal_info: { username: blog_author } },
             comments,
             activity
         },
     } = useContext(BlogContext);
 
     const [isReplying, setReplying] = useState(false);
+    const [isDeleting, setDeleting] = useState(false);
 
     const getId = (value) => value?._id?.toString?.() || value?.toString?.() || value;
 
@@ -115,16 +116,22 @@ const CommentCard = ({ index, leftVal, commentData }) => {
             });
     };
 
-    const deleteComment = (e) => {
-        const button = e.currentTarget;
-        button.setAttribute("disabled", true);
+    const deleteComment = () => {
+        setDeleting(true);
 
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment", { _id }, getAuthConfig())
         .then(() => {
-            const idsToRemove = collectDescendantIds(_id, comments.results);
-            idsToRemove.add(getId(_id));
+            const newResults = comments.results.map(comment => {
+                if (getId(comment._id) === getId(_id)) {
+                    return {
+                        ...comment,
+                        isDeleted: true,
+                        deletedAt: new Date().toISOString()
+                    };
+                }
 
-            const newResults = comments.results.filter(comment => !idsToRemove.has(getId(comment._id)));
+                return comment;
+            });
 
             setBlog({
                 ...blog,
@@ -134,57 +141,73 @@ const CommentCard = ({ index, leftVal, commentData }) => {
                 },
                 activity: {
                     ...activity,
-                    total_comments: Math.max(0, activity.total_comments - idsToRemove.size),
-                    total_parent_comments: commentData.parent
-                        ? activity.total_parent_comments
-                        : Math.max(0, activity.total_parent_comments - 1)
+                    total_comments: Math.max(0, activity.total_comments - 1)
                 }
             });
         })
         .catch(err => {
             console.log(err.response?.status);
             console.log(err.response?.data);
-            button.removeAttribute("disabled");
+            setDeleting(false);
         });
+    };
+
+    const confirmDeleteComment = () => {
+        if (isDeleting) return;
+
+        if (!window.confirm("Bạn có muốn xóa comment không?")) return;
+
+        deleteComment();
     };
 
     return (
         <div className="comment-card-wrap" style={{ paddingLeft: `${leftVal * 14}px` }}>
             <div className="comment-card">
-                <div className="comment-card-header">
-                    <img src={profile_image} className="comment-card-avatar" />
+                {
+                    !isDeleted ? (
+                        <div className="comment-card-header">
+                            <img src={profile_image} className="comment-card-avatar" />
 
-                    <p className="comment-card-author">
-                        {fullname} <span className="comment-card-username">@{commented_by_username}</span>
-                    </p>
+                            <p className="comment-card-author">
+                                {fullname} <span className="comment-card-username">@{commented_by_username}</span>
+                            </p>
 
-                    <p className="comment-card-date">{getDay(commentedAt)}</p>
-                </div>
+                            <p className="comment-card-date">{getDay(commentedAt)}</p>
+                        </div>
+                    ) : ""
+                }
 
-                <p className="comment-card-text">{comment}</p>
+                <p className={"comment-card-text " + (isDeleted ? "comment-card-deleted" : "")}>
+                    {isDeleted ? "Comment n\u00e0y \u0111\u00e3 b\u1ecb x\u00f3a." : comment}
+                </p>
 
                 <div className="comment-card-actions">
                     {
                         commentData.isReplyLoaded ? (
                             <button onClick={hideReplies} className="comment-card-action comment-card-muted-action">
-                                <i className="fi fi-rs-comment-dots"></i> Hide Reply
+                                <i className="fi fi-rs-comment-dots"></i> Ẩn trả lời
                             </button>
                         ) : (
                             children.length ? (
                                 <button onClick={loadReplies} className="comment-card-action comment-card-muted-action">
-                                    <i className="fi fi-rs-comment-dots"></i> {children.length} Reply
+                                    <i className="fi fi-rs-comment-dots"></i> {children.length} Trả lời
                                 </button>
                             ) : ""
                         )
                     }
 
-                    <button className="comment-card-reply" onClick={handleReplyClick}>Reply</button>
+                    {
+                        !isDeleted ? (
+                            <button className="comment-card-reply" onClick={handleReplyClick}>Trả lời</button>
+                        ) : ""
+                    }
 
                     {
-                        username === commented_by_username || username === blog_author ? (
+                        !isDeleted && (username === commented_by_username || username === blog_author) ? (
                             <button
-                                onClick={deleteComment}
+                                onClick={confirmDeleteComment}
                                 className="comment-card-delete"
+                                disabled={isDeleting}
                             >
                                 <i className="fi fi-rr-trash"></i>
                             </button>
@@ -193,9 +216,9 @@ const CommentCard = ({ index, leftVal, commentData }) => {
                 </div>
 
                 {
-                    isReplying ? (
+                    !isDeleted && isReplying ? (
                         <div className="comment-card-reply-field">
-                            <CommentField action="reply" index={index} replyingTo={_id} setReplying={setReplying} />
+                            <CommentField action="Trả lời" index={index} replyingTo={_id} setReplying={setReplying} />
                         </div>
                     ) : ""
                 }

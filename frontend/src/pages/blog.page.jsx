@@ -140,7 +140,7 @@ const BlogPage = () => {
                                 
             
                                 <p className="blog-page-date">
-                                    Published on {getDay(publishedAt)}
+                                    Đăng vào {getDay(publishedAt)}
                                 </p>
                             </div>
                         </div>

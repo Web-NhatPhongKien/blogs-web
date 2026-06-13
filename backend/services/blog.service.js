@@ -20,6 +20,22 @@ class BlogService {
             .limit(maxLimit);
     };
 
+    getPopularTagsService = async (maxLimit) => {
+        return await Blog.aggregate([
+            { $match: { draft: false } },
+            { $unwind: "$tags" },
+            {
+                $group: {
+                    _id: "$tags",
+                    name: { $first: "$tags" },
+                    totalBlogs: { $sum: 1 }
+                }
+            },
+            { $sort: { totalBlogs: -1, name: 1 } },
+            { $limit: maxLimit }
+        ]);
+    };
+
     searchBlogsService = async ({ tag, query, author, page, limit, eliminate_blog }) => {
         let findQuery = { draft: false };
 

@@ -8,7 +8,7 @@ import Pagination from "../components/pagination.component";
 import axios from "axios";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import { UserCard } from "../components/usercard.component";
-import UserCardsearch from "../components/userCardsearch";
+import UserCardsearch from "../components/userCardsearch.component";
 
 const SearchPage = () => {
 
@@ -79,7 +79,7 @@ const SearchPage = () => {
         <section className="h-cover desktop-layout">
             <div className="desktop-main">
                 <InPageNavigation 
-                    routes={[`Search Results from "${query}"`]} 
+                    routes={[`Kết quả tìm kiếm từ "${query}"`]} 
                 >
                     {/* Tab 1: Kết quả tìm kiếm Blog */}
                     <>
@@ -102,7 +102,7 @@ const SearchPage = () => {
 
             <div className="search-sidebar">
                 <h1 className="search-sidebar-title">
-                    User related to search <i className="fi fi-rr-user mt-1"></i>
+                    Kết tìm kiếm người dùng <i className="fi fi-rr-user mt-1"></i>
                 </h1>
                 
                 <UserCardWrapper />
