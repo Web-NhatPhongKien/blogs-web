@@ -1305,14 +1305,6 @@ input:disabled ~ .input-icon {
   color: var(--color-purple);
 }
 
-.blog-interaction-share {
-  transition: color var(--transition-fast);
-}
-
-.blog-interaction-share:hover {
-  color: var(--color-twitter);
-}
-
 /* ─────────────────────────────────────────────
    LOAD MORE / LOADER
 ───────────────────────────────────────────── */
