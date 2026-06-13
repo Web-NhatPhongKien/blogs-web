@@ -1,5 +1,7 @@
 import UserService from "../services/user.service.js";
 import BlogService from "../services/blog.service.js";
+import Notification from "../schemas/notification.schema.js";
+import BlogLike from "../schemas/blog-like.schema.js";
 
 class UserController {
     getProfile = async (req, res, next) => {
