@@ -921,6 +921,13 @@ i {
   border-left: 1px solid var(--color-border);
 }
 
+.search-sidebar {
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+
 /* ─────────────────────────────────────────────
    LAYOUT
 ───────────────────────────────────────────── */
