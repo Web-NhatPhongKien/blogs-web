@@ -939,11 +939,14 @@ section {
 }
 
 .desktop-main {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .desktop-only {
-  min-width: 400px;
+  width: 340px;
+  min-width: 340px;
+  flex-shrink: 0;
 }
 
 /* ─────────────────────────────────────────────
@@ -1693,7 +1696,9 @@ input:disabled ~ .input-icon {
 
 .comment-field-submit {
   margin-top: var(--space-5);
-  padding-inline: var(--space-10);
+  padding: 10px 24px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .comment-card-wrap {

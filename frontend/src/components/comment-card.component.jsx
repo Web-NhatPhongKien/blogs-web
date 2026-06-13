@@ -185,12 +185,12 @@ const CommentCard = ({ index, leftVal, commentData }) => {
                     {
                         commentData.isReplyLoaded ? (
                             <button onClick={hideReplies} className="comment-card-action comment-card-muted-action">
-                                <i className="fi fi-rs-comment-dots"></i> Hide Reply
+                                <i className="fi fi-rs-comment-dots"></i> Ẩn trả lời
                             </button>
                         ) : (
                             children.length ? (
                                 <button onClick={loadReplies} className="comment-card-action comment-card-muted-action">
-                                    <i className="fi fi-rs-comment-dots"></i> {children.length} Reply
+                                    <i className="fi fi-rs-comment-dots"></i> {children.length} Trả lời
                                 </button>
                             ) : ""
                         )
@@ -198,7 +198,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
 
                     {
                         !isDeleted ? (
-                            <button className="comment-card-reply" onClick={handleReplyClick}>Reply</button>
+                            <button className="comment-card-reply" onClick={handleReplyClick}>Trả lời</button>
                         ) : ""
                     }
 
@@ -218,7 +218,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
                 {
                     !isDeleted && isReplying ? (
                         <div className="comment-card-reply-field">
-                            <CommentField action="reply" index={index} replyingTo={_id} setReplying={setReplying} />
+                            <CommentField action="Trả lời" index={index} replyingTo={_id} setReplying={setReplying} />
                         </div>
                     ) : ""
                 }

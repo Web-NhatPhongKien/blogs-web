@@ -26,11 +26,11 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
 
     const handleComment = () => {
         if (!access_token) {
-            return toast.error("login first to leave a comment");
+            return toast.error("Đăng nhập để viết bình luận");
         }
         
         if (!comment.length) {
-            return toast.error("Write something to leave a comment");
+            return toast.error("Vui lòng nhập nội dung bình luận");
         }
 
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/add-comment", {
@@ -105,7 +105,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder={action === "comment" ? "Leave a comment" : "Leave a reply"}
+                placeholder={action === "comment" ? "Viết bình luận..." : "Viết trả lời..."}
                 className="input-box comment-field-textarea"
             ></textarea>
             <button className="btn-dark comment-field-submit" onClick={handleComment}>
