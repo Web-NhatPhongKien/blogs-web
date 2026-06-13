@@ -1750,6 +1750,11 @@ input:disabled ~ .input-icon {
   line-height: 2;
 }
 
+.comment-card-deleted {
+  color: var(--color-muted);
+  font-style: italic;
+}
+
 .comment-card-actions {
   display: flex;
   align-items: center;

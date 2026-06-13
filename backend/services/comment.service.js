@@ -11,7 +11,17 @@ class CommentService {
             commented_by: user_id,
         };
 
+        let parentComment = null;
+
         if (replying_to) {
+            parentComment = await Comment.findOne({ _id: replying_to, isDeleted: { $ne: true } });
+
+            if (!parentComment) {
+                const err = new Error("Bình luận không tồn tại");
+                err.statusCode = 404;
+                throw err;
+            }
+
             commentObj.parent = replying_to;
             commentObj.isReply = true;
         }
@@ -36,11 +46,11 @@ class CommentService {
         let notificationFor = blog_author; 
 
         if (replying_to) {
-            const parentComment = await Comment.findOneAndUpdate(
-                { _id: replying_to }, 
+            await Comment.findOneAndUpdate(
+                { _id: replying_to, isDeleted: { $ne: true } }, 
                 { $push: { children: savedComment._id } }
             );
-            
+
             notificationFor = parentComment.commented_by; 
 
             if (notification_id) {
@@ -98,20 +108,15 @@ class CommentService {
             .sort({ commentedAt: 1 });
     }
 
-    deleteCommentRecursive = async (comment_id) => {
-        const comment = await Comment.findOneAndDelete({ _id: comment_id });
+    softDeleteComment = async (comment_id) => {
+        const comment = await Comment.findOneAndUpdate(
+            { _id: comment_id, isDeleted: { $ne: true } },
+            { isDeleted: true, deletedAt: new Date() },
+            { new: true }
+        );
         if (!comment) return;
 
         const cleanupTasks = [];
-
-        if (comment.parent) {
-            cleanupTasks.push(
-                Comment.findOneAndUpdate(
-                    { _id: comment.parent },
-                    { $pull: { children: comment_id } }
-                )
-            );
-        }
 
         cleanupTasks.push(Notification.findOneAndDelete({ comment: comment_id }));
         cleanupTasks.push(Notification.findOneAndUpdate(
@@ -123,28 +128,19 @@ class CommentService {
             Blog.findOneAndUpdate(
                 { _id: comment.blog_id },
                 {
-                    $pull: { comments: comment_id },
                     $inc: {
                         "activity.total_comments": -1,
-                        "activity.total_parent_comments": comment.parent ? 0 : -1
                     }
                 }
             )
         );
 
         await Promise.all(cleanupTasks);
-
-        if (comment.children && comment.children.length > 0) {
-            const childDeletionTasks = comment.children.map(childId =>
-                this.deleteCommentRecursive(childId)
-            );
-            await Promise.all(childDeletionTasks);
-        }
     };
 
 
     deleteCommentService = async (user_id, comment_id) => {
-        const comment = await Comment.findById(comment_id);
+        const comment = await Comment.findOne({ _id: comment_id, isDeleted: { $ne: true } });
         
         if (!comment) {
             const err = new Error("Bình luận không tồn tại");
@@ -161,7 +157,7 @@ class CommentService {
             throw err;
         }
 
-        await this.deleteCommentRecursive(comment_id);
+        await this.softDeleteComment(comment_id);
     };
 }
 
