@@ -11,7 +11,7 @@ class BlogController {
     getLatestBlogs = async (req, res) => {
         try {
             const page = Number(req.body.page) || 1;
-            const maxLimit = 2;
+            const maxLimit = 5;
 
             const blogs = await BlogService.getLatestBlogsService(page, maxLimit);
             const totalDocs = await BlogService.getAllLatestBlogsCountService();
@@ -38,6 +38,19 @@ class BlogController {
             return res.status(200).json({ blogs });
         } catch (err) {
             console.error("Lỗi khi lấy trending blogs:", err);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    getPopularTags = async (req, res) => {
+        try {
+            const maxLimit = 10;
+
+            const tags = await BlogService.getPopularTagsService(maxLimit);
+
+            return res.status(200).json({ tags });
+        } catch (err) {
+            console.error("Lá»—i khi láº¥y popular tags:", err);
             return res.status(500).json({ error: err.message });
         }
     }

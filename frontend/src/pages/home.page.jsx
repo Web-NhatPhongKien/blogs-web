@@ -12,9 +12,8 @@ import Pagination from "../components/pagination.component";
 const HomePage = () => {
     let [ blogs, setBlogs ] = useState(null);
     let [ trendingBlogs, setTrendingBlogs ] = useState(null);    
+    let [ categories, setCategories ] = useState([]);
     let [ pageState, setPageState ] = useState("home");
-
-    let categories = ["programming", "hollywood", "sports", "technology", "travel", "fashion", "business", "health", "education"];
 
     const fetchLatestBlogs = ({ page = 1 } = {}) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
@@ -62,8 +61,19 @@ const HomePage = () => {
         })
     }
 
+    const fetchPopularTags = () => {
+        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/popular-tags")
+        .then(({ data }) => {
+            setCategories(data.tags || []);
+        })
+        .catch(err => {
+            console.log(err);
+            setCategories([]);
+        })
+    }
+
     const loadBlogByCategory = (e) => {
-        let category = e.target.innerText.toLowerCase();
+        let category = e.currentTarget.dataset.category;
         
         // Reset state blog về null để hiện loader
         setBlogs(null);
@@ -88,6 +98,10 @@ const HomePage = () => {
         // Chỉ fetch trending blogs nếu chưa có dữ liệu
         if (!trendingBlogs) {
             fetchTrendingBlogs();
+        }
+
+        if (!categories.length) {
+            fetchPopularTags();
         }
 
     }, [pageState])
@@ -126,14 +140,15 @@ const HomePage = () => {
                             <h1 className="category-title">Stories form all interests</h1>
     
                             <div className="tags-wrap">
-                                {categories.map((category, i) => {
+                                {categories.map((category) => {
                                     return (
                                         <button 
                                             onClick={loadBlogByCategory} 
-                                            className={`tag ${pageState === category ? "active" : ""}`} 
-                                            key={i}
+                                            data-category={category.name}
+                                            className={`tag ${pageState === category.name ? "active" : ""}`} 
+                                            key={category.name}
                                         >
-                                            {category}
+                                            {category.name}
                                         </button>
                                     );
                                 })}

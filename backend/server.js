@@ -32,6 +32,7 @@ mongoose
 
 server.post("/latest-blogs", BlogController.getLatestBlogs);
 server.get("/trending-blogs", BlogController.getTrendingBlogs);
+server.get("/popular-tags", BlogController.getPopularTags);
 server.post("/search-blogs", BlogController.searchBlogs);
 server.post("/get-blog", verifyTokenOptional, UserController.getBlog);
 
