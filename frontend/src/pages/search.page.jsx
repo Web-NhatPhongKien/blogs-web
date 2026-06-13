@@ -8,6 +8,7 @@ import Pagination from "../components/pagination.component";
 import axios from "axios";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import { UserCard } from "../components/usercard.component";
+import UserCardsearch from "../components/userCardsearch";
 
 const SearchPage = () => {
 
@@ -65,7 +66,7 @@ const SearchPage = () => {
                     users.length ? 
                         users.map((user, i) => {
                             return (
-                                <UserCard user={user} />
+                                <UserCardsearch user={user} />
                             );
                         })
                     : <NoDataMessage message="No user found" />
