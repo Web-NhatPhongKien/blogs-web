@@ -4,6 +4,10 @@ import { nanoid } from "nanoid";
 import joi from "joi";
 import User from "../schemas/user.schema.js";
 import Blog from "../schemas/blog.schema.js";
+import Notification from "../schemas/notification.schema.js";
+import BlogLike from "../schemas/blog-like.schema.js";
+import Comment from "../schemas/comment.schema.js";
+
 
 
 
@@ -103,6 +107,7 @@ class BlogController {
     createBlog = async (req, res, next) => {
         try {
             let authorId = req.user.userId
+            
 
             if (!authorId) {
                 return res.status(401).json({ error: "Invalid token, author not found" });
@@ -114,7 +119,8 @@ class BlogController {
                 banner = "",
                 tags = [],
                 content = { blocks: [] },
-                draft = false
+                draft = false,
+                id
             } = req.body;
 
             if (!title.length) {
@@ -143,13 +149,62 @@ class BlogController {
 
             tags = tags.map(tag => tag.toLowerCase());
 
-            let blog_id = title
+            let blog_id = id || title
                 .replace(/[^a-zA-Z0-9]/g, " ")
                 .replace(/\s+/g, "-")
                 .trim() + nanoid();
 
+            if(id){
+                const draftValue = draft === true || draft === "true";
 
-            let blog = new Blog({
+    return Blog.findOneAndUpdate(
+        {
+            blog_id: id,
+            author: authorId
+        },
+        {
+            $set: {
+                title,
+                des,
+                banner,
+                content,
+                tags,
+                draft: draftValue
+            }
+        },
+        {
+            new: true
+        }
+    )
+    .then((blog) => {
+        if (!blog) {
+            return res.status(404).json({
+                error: "Không tìm thấy bài viết để cập nhật"
+            });
+        }
+
+            console.log("Blog sau khi cập nhật:", {
+                blog_id: blog.blog_id,
+                draft: blog.draft
+            });
+
+            return res.status(200).json({
+                blog_id: blog.blog_id,
+                draft: blog.draft
+            });
+    })
+        .catch((err) => {
+            // THÊM: in lỗi thật ra terminal
+            console.error("UPDATE BLOG ERROR:", err);
+            console.error("UPDATE BLOG MESSAGE:", err.message);
+
+            return res.status(500).json({
+                error: err.message
+            });
+        });
+
+            }else{
+                let blog = new Blog({
                 title,
                 des,
                 banner,
@@ -158,26 +213,32 @@ class BlogController {
                 author: authorId,
                 blog_id,
                 draft: Boolean(draft)
-            });
+                });
 
-            await blog.save();
+                await blog.save();
 
-            let incrementVal = draft ? 0 : 1;
+                let incrementVal = draft ? 0 : 1;
 
-            await User.findOneAndUpdate(
-                { _id: authorId },
-                {
-                    $inc: { "account_info.total_posts": incrementVal },
-                    $push: { blogs: blog._id }
-                }
-            );
+                await User.findOneAndUpdate(
+                    { _id: authorId },
+                    {
+                        $inc: { "account_info.total_posts": incrementVal },
+                        $push: { blogs: blog._id }
+                    }
+                );
 
-            return res.status(200).json({ blog_id: blog.blog_id });
+                return res.status(200).json({ blog_id: blog.blog_id });
+            }
+
+            
 
         } catch (err) {
-            console.log(err);
+            console.error("CREATE/UPDATE BLOG ERROR:");
+            console.error(err);
+            console.error(err.stack);
+
             return res.status(500).json({
-                error: "Internal server error"
+                error: err.message || "Internal server error"
             });
         }
     };
@@ -193,7 +254,56 @@ class BlogController {
             next(err);
         }
     };
+    userWrittenBlogs = async (req, res, next) =>{
+        let user_id  = req.user.userId;
+        let { page, draft, query, deletedDocCount } = req.body;
 
+        let maxLimit = 5;
+        let skipDocs = (page - 1) * maxLimit;
+        if (deletedDocCount) {
+            skipDocs -= deletedDocCount;
+        }
+        Blog.find({ author: user_id, draft, title: new RegExp(query, "i") })
+        .skip(skipDocs)
+        .limit(maxLimit)
+        .sort({publishedAt: -1 })
+        .select("title banner publishedAt blog_id activity des draft -_id")
+        .then(blogs => {
+            return res.status(200).json({blogs})
+        })
+        .catch(err => {
+            return res.status(500).json({error: err.message })
+        })
+    }
+    userWrittenBlogsCount = async (req, res, next) => {
+        let user_id  = req.user.userId;
+        let {draft, query } = req.body;
+        Blog.countDocuments({author: user_id, draft, title: new RegExp(query, "i") })
+        .then(count => {
+            return res.status(200).json({ totalDocs: count})
+        })
+        .catch( err => {
+            console.log(err.message);
+            return res.status(500).json({ error: err.message});
+        })
+    }
+    deleteBlog = async (req, res, next) => {
+        let user_id  = req.user.userId;
+        let {blog_id} = req.body;
+
+        Blog.findOneAndDelete({blog_id})
+        .then(blog => {
+
+            Notification.deleteMany({ blog: blog._id }).then(data => console.log('Notification deleted'));
+            Comment.deleteMany({ blog_id: blog._id }).then(data => console.log('Comment deleted'));
+            User.findOneAndUpdate({_id: user_id}, {$pull: {blog: blog._id}, $inc: {"account_info.total_posts":-1}} )
+            .then(user => console.log("Blog deleted"))
+            return res.status(200).json({status: 'done'});
+        })
+        .catch(err => {
+            return res.status(500).json({error: err.message})
+        })
+    }
 }
 
 export default new BlogController();

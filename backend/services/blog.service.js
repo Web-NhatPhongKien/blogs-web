@@ -54,8 +54,9 @@ class BlogService {
     getBlogService = async (blog_id, draft, mode, user_id) => {
         const incrementVal = mode !== "edit" ? 1 : 0;
         const findQuery = { blog_id };
+        const isDraft = draft === true || draft === "true";
 
-        if (draft !== "true") {
+        if (!isDraft) {
             findQuery.draft = false;
         }
 

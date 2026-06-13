@@ -4,7 +4,7 @@ import { editorContext } from "./editor.pages";
 import Tag from "./tags.components";
 import axios from "axios";
 import Loader from "./loader.component";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getAuthConfig } from "../common/auth-config";
 
 
@@ -16,6 +16,7 @@ const PublishForm = () => {
     let token = sessionStorage.getItem("token");
 
     let navigate = useNavigate();
+    let { blog_id } = useParams();
 
     const handleTitleChange = (e) =>{
         let input = e.target;
@@ -83,7 +84,8 @@ const PublishForm = () => {
 
         const loadingToast = toast.loading("Publishing...");
 
-        let blogObj = { title, banner, des, content, tags, draft: false };
+        let blogObj = { title, banner, des, content, tags, draft: false, id: blog_id || blog.blog_id };
+        console.log("Publish data:", blogObj);
 
         axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog", blogObj, getAuthConfig())
         .then(({ data }) => {
@@ -106,7 +108,6 @@ const PublishForm = () => {
                 id: loadingToast
             });
 
-            setIsPublishing(false);
         });
     }
 

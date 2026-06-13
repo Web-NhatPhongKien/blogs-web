@@ -49,7 +49,9 @@ server.post("/get-replies-comments", CommentController.getRepliesComments);
 server.post("/delete-comment", verifyToken, CommentController.deleteComment);
 
 server.post("/create-blog", verifyToken, BlogController.createBlog);
-
+server.post("/user-written-blogs", verifyToken, BlogController.userWrittenBlogs);
+server.post("/user-written-blogs-count",verifyToken, BlogController.userWrittenBlogsCount)
+server.post("/delete-blog", verifyToken, BlogController.deleteBlog )
   //routes
 server.use('/api/auth', authRoutes);
 server.use("/api/user", userRoutes); // THÊM: dùng cho sửa profile và đổi mật khẩu
