@@ -17,13 +17,12 @@ const AdminLayout = () => {
     <section className="admin-page">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <h2>Blog Admin</h2>
-          <p>Management Panel</p>
+          <h3>Quản trị viên</h3>
         </div>
 
         <nav className="admin-nav">
           <NavLink to="/admin" end>
-            Dashboard
+            Tổng quan
           </NavLink>
 
           <NavLink to="/admin/users">
@@ -35,20 +34,15 @@ const AdminLayout = () => {
           </NavLink>
 
           <NavLink to="/admin/tags">
-            Danh mục / Tags
+            Danh mục
           </NavLink>
-
-          {/* <NavLink to="/admin/admins">
-            Quản trị viên
-          </NavLink> */}
         </nav>
       </aside>
 
       <main className="admin-main">
         <header className="admin-topbar">
           <div>
-            <h1>Admin Dashboard</h1>
-            <p>Quản lý hệ thống blog</p>
+            <h1>Quản lý hệ thống</h1>
           </div>
 
           <button onClick={() => navigate("/profile")}>

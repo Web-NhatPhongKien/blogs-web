@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import adminAPI from "../../services/adminApi.service";
+import toast from "react-hot-toast";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
 
   const [query, setQuery] = useState({
     page: 1,
-    limit: 10,
+    limit: 5,
     search: "",
     role: "all",
     sort: "joinedAt",
@@ -45,7 +46,7 @@ const AdminUsers = () => {
         totalPages: res.data.totalPages || 1,
       });
     } catch (err) {
-      alert(err?.response?.data?.error || "Không thể tải danh sách user");
+      toast.error(err?.response?.data?.error || "Không thể tải danh sách user");
     } finally {
       setLoading(false);
     }
@@ -71,13 +72,13 @@ const AdminUsers = () => {
     }));
   };
 
-  const handleLimitChange = (e) => {
-    setQuery((prev) => ({
-      ...prev,
-      limit: Number(e.target.value),
-      page: 1,
-    }));
-  };
+  // const handleLimitChange = (e) => {
+  //   setQuery((prev) => ({
+  //     ...prev,
+  //     limit: Number(e.target.value),
+  //     page: 1,
+  //   }));
+  // };
 
   const handleSort = (field) => {
     setQuery((prev) => ({
@@ -141,7 +142,7 @@ const AdminUsers = () => {
     if (!editingUser) return;
 
     if (!editForm.username.trim() || !editForm.email.trim()) {
-      alert("Username và email không được để trống");
+      toast.error("Username và email không được để trống");
       return;
     }
 
@@ -154,12 +155,12 @@ const AdminUsers = () => {
         role: editForm.role,
       });
 
-      alert("Cập nhật tài khoản thành công");
+      toast.success("Cập nhật tài khoản thành công");
 
       closeEditModal();
       loadUsers();
     } catch (err) {
-      alert(err?.response?.data?.error || "Cập nhật tài khoản thất bại");
+      toast.error(err?.response?.data?.error || "Cập nhật tài khoản thất bại");
     }
   };
 
@@ -175,11 +176,11 @@ const AdminUsers = () => {
     try {
       await adminAPI.delete(`/users/${user._id}`);
 
-      alert("Xóa tài khoản thành công");
+      toast.success("Xóa tài khoản thành công");
 
       loadUsers();
     } catch (err) {
-      alert(err?.response?.data?.error || "Xóa tài khoản thất bại");
+      toast.error(err?.response?.data?.error || "Xóa tài khoản thất bại");
     }
   };
 
@@ -190,7 +191,7 @@ const AdminUsers = () => {
 
   return (
     <div className="admin-section">
-      <div className="admin-section-header">
+      {/* <div className="admin-section-header">
         <div>
           <h3>Quản lý tài khoản</h3>
         </div>
@@ -199,18 +200,18 @@ const AdminUsers = () => {
           <span>Tổng tài khoản</span>
           <strong>{pagination.totalDocs}</strong>
         </div>
-      </div>
+      </div> */}
 
       <div className="admin-toolbar">
         <input
           type="text"
-          placeholder="Tìm theo username hoặc email..."
+          placeholder="Tìm kiếm"
           value={query.search}
           onChange={handleSearchChange}
         />
 
         <select value={query.role} onChange={handleRoleFilter}>
-          <option value="all">Tất cả role</option>
+          <option value="all">Tất cả</option>
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
@@ -231,10 +232,10 @@ const AdminUsers = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Avatar</th>
+                  <th>Ảnh đại diện</th>
 
                   <th onClick={() => handleSort("username")}>
-                    Username {getSortIcon("username")}
+                    Tên tài khoản {getSortIcon("username")}
                   </th>
 
                   <th onClick={() => handleSort("email")}>
@@ -242,7 +243,7 @@ const AdminUsers = () => {
                   </th>
 
                   <th onClick={() => handleSort("role")}>
-                    Role {getSortIcon("role")}
+                    Vai trò {getSortIcon("role")}
                   </th>
 
                   {/* <th onClick={() => handleSort("total_posts")}>
@@ -254,7 +255,7 @@ const AdminUsers = () => {
                   </th> */}
 
                   <th onClick={() => handleSort("joinedAt")}>
-                    Joined {getSortIcon("joinedAt")}
+                    Tham gia vào {getSortIcon("joinedAt")}
                   </th>
 
                   <th>Thao tác</th>
@@ -379,32 +380,12 @@ const AdminUsers = () => {
               </div>
 
               <div className="admin-form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={editForm.email}
-                  onChange={handleEditChange}
-                />
-              </div>
-
-              <div className="admin-form-group">
                 <label>Bio</label>
                 <textarea
                   name="bio"
                   value={editForm.bio}
                   onChange={handleEditChange}
                   maxLength={200}
-                />
-              </div>
-
-              <div className="admin-form-group">
-                <label>Ảnh đại diện URL</label>
-                <input
-                  type="text"
-                  name="profile_img"
-                  value={editForm.profile_img}
-                  onChange={handleEditChange}
                 />
               </div>
 

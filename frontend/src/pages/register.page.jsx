@@ -97,13 +97,13 @@ export default function Register() {
     return (
         <section className="auth-section">
             <form onSubmit={handleSubmit} className="auth-form">
-                <h1 className="auth-title">Join with us</h1>
+                <h1 className="auth-title">Tham gia với chúng tôi</h1>
 
                 <div className="input-group">
                     <input
                         name="username"
                         type="text"
-                        placeholder="Username"
+                        placeholder="Tên tài khoản"
                         className="input-box"
                         value={form.username}
                         onChange={handleChange}
@@ -129,7 +129,7 @@ export default function Register() {
                     <input
                         name="password"
                         type="password"
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         className="input-box"
                         value={form.password}
                         onChange={handleChange}
@@ -139,12 +139,12 @@ export default function Register() {
                 </div>
 
                 <button className="btn-dark" type="submit" disabled={loading}>
-                    {loading ? 'Signing Up...' : 'Sign Up'}
+                    {loading ? 'Đang đăng ký ...' : 'Đăng ký'}
                 </button>
 
                 <p className="auth-link">
-                    You have an account?{' '}
-                    <Link to="/login">Welcome back</Link>
+                    Bạn đã có tài khoản ?{' '}
+                    <Link to="/login">Mừng bạn trở lại</Link>
                 </p>
             </form>
         </section>

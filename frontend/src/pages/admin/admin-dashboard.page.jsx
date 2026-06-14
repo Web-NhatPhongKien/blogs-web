@@ -56,7 +56,7 @@ const AdminDashboard = () => {
         <div className="admin-stat-card">
           <span>Tài khoản</span>
           <h2>{stats.users}</h2>
-          <p>Tổng số tài khoản trong hệ thống</p>
+          <p>Tổng số tài khoản</p>
         </div>
 
         <div className="admin-stat-card">
@@ -68,19 +68,19 @@ const AdminDashboard = () => {
         <div className="admin-stat-card">
           <span>Đang hiển thị</span>
           <h2>{stats.visibleBlogs}</h2>
-          <p>Bài viết public / hiện</p>
+          <p>Bài viết đang hiện</p>
         </div>
 
         <div className="admin-stat-card">
           <span>Đang ẩn</span>
           <h2>{stats.hiddenBlogs}</h2>
-          <p>Bài viết draft / ẩn</p>
+          <p>Bài viết nháp</p>
         </div>
 
         <div className="admin-stat-card">
           <span>Danh mục</span>
           <h2>{stats.tags}</h2>
-          <p>Danh mục lấy từ tags của bài viết</p>
+          <p>Tổng danh mục</p>
         </div>
       </div>
     </div>

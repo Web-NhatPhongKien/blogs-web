@@ -65,12 +65,12 @@ const Profile = () => {
             <div className="profile-stats">
               <div>
                 <h3>{totalPosts}</h3>
-                <p>Posts</p>
+                <p>Bài đăng</p>
               </div>
 
               <div>
                 <h3>{totalReads}</h3>
-                <p>Reads</p>
+                <p>Lượt xem</p>
               </div>
             </div>
 
@@ -117,7 +117,7 @@ const Profile = () => {
                 to="/settings/edit-profile" 
                 className="profile-btn profile-btn-dark"
               >
-                Edit profile
+                Chỉnh sửa trang cá nhân
               </Link>
 
               {role === "admin" && (
@@ -125,7 +125,7 @@ const Profile = () => {
                   to="/admin" 
                   className="profile-btn profile-btn-light"
                 >
-                  Admin dashboard
+                  Quản trị viên
                 </Link>
               )}
 
@@ -133,7 +133,7 @@ const Profile = () => {
                 onClick={handleLogout} 
                 className="profile-btn profile-btn-light"
               >
-                Logout
+                Đăng xuất
               </button>
             </div>
           </div>
