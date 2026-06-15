@@ -307,7 +307,7 @@ const EditProfile = () => {
         <section className="edit-profile-page">
             <div className="edit-profile-container">
                 <div className="edit-profile-header">
-                    <h1>Edit profile</h1>
+                    <h1>Chỉnh sửa trang cá nhân</h1>
                     <p>
                         Cập nhật thông tin cá nhân, ảnh đại diện và các liên kết mạng xã hội
                         của bạn.
@@ -325,6 +325,7 @@ const EditProfile = () => {
                                 alt={form.username || "avatar"}
                                 className="edit-profile-avatar"
                             />
+                            {/* <i className="fi fi-rr-pencil"></i> */}
                             <input
                                 id="uploadAvatar"
                                 type="file"
@@ -344,7 +345,7 @@ const EditProfile = () => {
                         <h3>Thông tin cá nhân</h3>
 
                         <div className="edit-field">
-                            <label>Username</label>
+                            <label>Tên tài khoản</label>
                             <input
                                 type="text"
                                 name="username"
@@ -355,7 +356,7 @@ const EditProfile = () => {
                         </div>
 
                         <div className="edit-field">
-                            <label>Bio</label>
+                            <label>Mô tả</label>
                             <textarea
                                 name="bio"
                                 value={form.bio}
@@ -367,7 +368,7 @@ const EditProfile = () => {
                             <span className="edit-char-count">{form.bio.length}/200</span>
                         </div>
 
-                        <div className="edit-field">
+                        {/* <div className="edit-field">
                             <label>Ảnh đại diện URL</label>
                             <input
                                 type="text"
@@ -376,7 +377,7 @@ const EditProfile = () => {
                                 onChange={handleChange}
                                 placeholder="Dán link ảnh đại diện"
                             />
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="edit-section">

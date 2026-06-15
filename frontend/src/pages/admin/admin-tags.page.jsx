@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import adminAPI from "../../services/adminApi.service";
+import toast from "react-hot-toast";
 
 const AdminTags = () => {
   const [tags, setTags] = useState([]);
 
   const [query, setQuery] = useState({
     page: 1,
-    limit: 10,
+    limit: 5,
     search: "",
     sort: "name",
     order: "asc",
@@ -37,7 +38,7 @@ const AdminTags = () => {
         totalPages: res.data.totalPages || 1,
       });
     } catch (err) {
-      alert(err?.response?.data?.error || "Không thể tải danh sách tag");
+      toast.error(err?.response?.data?.error || "Không thể tải danh sách tag");
     } finally {
       setLoading(false);
     }
@@ -51,14 +52,6 @@ const AdminTags = () => {
     setQuery((prev) => ({
       ...prev,
       search: e.target.value,
-      page: 1,
-    }));
-  };
-
-  const handleLimitChange = (e) => {
-    setQuery((prev) => ({
-      ...prev,
-      limit: Number(e.target.value),
       page: 1,
     }));
   };
@@ -108,12 +101,12 @@ const AdminTags = () => {
     const trimmedNewName = newTagName.trim();
 
     if (!trimmedNewName) {
-      alert("Tên tag mới không được để trống");
+      toast.error("Tên tag mới không được để trống");
       return;
     }
 
     if (trimmedNewName === oldName) {
-      alert("Tên tag mới không được trùng tên cũ");
+      toast.error("Tên tag mới không được trùng tên cũ");
       return;
     }
 
@@ -123,12 +116,12 @@ const AdminTags = () => {
         newName: trimmedNewName,
       });
 
-      alert("Đổi tên danh mục/tag thành công");
+      toast.success("Đổi tên danh mục thành công");
 
       closeRenameModal();
       loadTags();
     } catch (err) {
-      alert(err?.response?.data?.error || "Đổi tên tag thất bại");
+      toast.error(err?.response?.data?.error || "Đổi tên tag thất bại");
     }
   };
 
@@ -142,44 +135,25 @@ const AdminTags = () => {
     try {
       await adminAPI.delete(`/tags/${encodeURIComponent(tag.name)}`);
 
-      alert("Xóa tag thành công");
+      toast.success("Xóa tag thành công");
 
       loadTags();
     } catch (err) {
-      alert(err?.response?.data?.error || "Xóa tag thất bại");
+      toast.error(err?.response?.data?.error || "Xóa tag thất bại");
     }
   };
 
   return (
     <div className="admin-section">
-      <div className="admin-section-header">
-        <div>
-          <h2>Quản lý danh mục / Tags</h2>
-          <p>
-            Danh mục được lấy từ trường tags của các bài viết trong hệ thống.
-          </p>
-        </div>
 
-        <div className="admin-total-box">
-          <span>Tổng tags</span>
-          <strong>{pagination.totalDocs}</strong>
-        </div>
-      </div>
 
       <div className="admin-toolbar admin-toolbar-tags">
         <input
           type="text"
-          placeholder="Tìm kiếm tag..."
+          placeholder="Tìm kiếm"
           value={query.search}
           onChange={handleSearchChange}
         />
-
-        <select value={query.limit} onChange={handleLimitChange}>
-          <option value={5}>5 dòng</option>
-          <option value={10}>10 dòng</option>
-          <option value={20}>20 dòng</option>
-          <option value={50}>50 dòng</option>
-        </select>
       </div>
 
       <div className="admin-table-card">

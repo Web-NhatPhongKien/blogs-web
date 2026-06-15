@@ -71,7 +71,7 @@ const Navbar = () => {
                 <div className="relative bg-white w-auto">
                     <input
                         type="text"
-                        placeholder="Search"
+                        placeholder="Tìm kiếm"
                         className="w-auto bg-grey p-4 pr-6 rounded-full placeholder:text-dark-grey pl-12"
                         onKeyDown={handleSearch}
                     />
@@ -81,7 +81,7 @@ const Navbar = () => {
 
                 <div className="flex items-center gap-3 md:gap-6 ml-auto">
                     <Link to="/editor" className="flex md:flex gap-2 link">
-                        <i className="fi fi-sr-pencil">Click to edit</i>
+                        <i className="fi fi-sr-pencil"> Đăng bài</i>
                     </Link>
 
                     {user ? (
@@ -109,11 +109,11 @@ const Navbar = () => {
                     ) : (
                         <>
                             <Link className="btn-dark" to="/login">
-                                Sign in
+                                Đăng nhập
                             </Link>
 
                             <Link className="btn-light" to="/register">
-                                Sign up
+                                Đăng ký
                             </Link>
                         </>
                     )}
