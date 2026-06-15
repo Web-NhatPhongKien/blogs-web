@@ -82,22 +82,20 @@ const BlogEditor = () => {
         if(!blog.title.length){
             return toast.error("Write blog tilte to publish!");
         }
-        if (textEditor.isReady) {
-            textEditor.save().then(data => {
+        textEditor.isReady
+            .then(() => textEditor.save())
+            .then(data => {
                 if (data.blocks && data.blocks.length) {
-                
-                setBlog({ ...blog, content: data });
-                setEditorState("publish");
-                }
-                else {
-                return toast.error("Write something in your blog to publish it!");
+                    setBlog({ ...blog, content: data });
+                    setEditorState("publish");
+                } else {
+                    return toast.error("Write something in your blog to publish it!");
                 }
             })
-        .catch(err => {
-            console.log("error",err);
-        });
+            .catch(err => {
+                console.log("error",err);
+            });
         };
-    }
 
     const handleSaveDraft = async (e) => {
         const button = e.currentTarget;

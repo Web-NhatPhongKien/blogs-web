@@ -20,44 +20,10 @@ const BlogsManage = ({ userId }) => {
     const [query, setQuery] = useState("");
     const [drafts, setDrafts] = useState(null);
     const token = sessionStorage.getItem("token");
-
-    const fetchUserBlogs = ({ page = 1 } = {}) => {
-        if (!userId) {
-            setBlogs({ results: [], page: 1, totalDocs: 0, totalPages: 0 });
-            return;
-        }
-
-        axios
-            .post(`${import.meta.env.VITE_SERVER_DOMAIN}/search-blogs`, {
-                author: userId,
-                page,
-                limit: 5,
-                query,
-            })
-            .then(({ data }) => {
-                const formattedData = filterPaginationData({
-                    data: data.blogs,
-                    page: data.page,
-                    totalDocs: data.totalDocs,
-                    totalPages: data.totalPages,
-                    limit: data.limit,
-                });
-
-                setBlogs(formattedData);
-            })
-            .catch((err) => {
-                console.log(err);
-                setBlogs({
-                    results: [],
-                    page: 1,
-                    totalDocs: 0,
-                    totalPages: 0,
-                });
-            });
-    };
+    const maxLimit = 5;
 
 
-    const getBlogs = ({ page, draft, deletedDocCount = 0}) => {
+    const getBlogs = ({ page = 1, draft, deletedDocCount = 0}) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/user-written-blogs",{
             page, draft, query, deletedDocCount
         },{
@@ -67,13 +33,34 @@ const BlogsManage = ({ userId }) => {
         })
         .then( async ({data}) => {
             let formattedData = await filterPaginationData({
-                state: draft ? drafts: blogs,
+                state: null,
                 data: data.blogs,
                 page,
-                user : token,
+                user: token,
                 countRoute: "/user-written-blogs-count",
-                data_to_send: {draft, query}
-            })
+                data_to_send: { draft, query }
+            });
+
+            const countResponse = await axios.post(
+                import.meta.env.VITE_SERVER_DOMAIN + "/user-written-blogs-count",
+                { draft, query },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const totalDocs = Number(countResponse.data.totalDocs) || 0;
+
+            formattedData = {
+                ...formattedData,
+                page: Number(page),
+                totalDocs,
+                totalPages: Math.ceil(totalDocs / maxLimit),
+                deletedDocCount
+            };
+            
 
             if(draft){
                 setDrafts(formattedData)
@@ -87,6 +74,22 @@ const BlogsManage = ({ userId }) => {
             console.log(err)
         })
     }
+
+    const getPublishedBlogs = ({ page = 1 }) => {
+        getBlogs({
+            page,
+            draft: false,
+            deletedDocCount: blogs?.deletedDocCount || 0
+        });
+    };
+
+    const getDraftBlogs = ({ page = 1 }) => {
+        getBlogs({
+            page,
+            draft: true,
+            deletedDocCount: drafts?.deletedDocCount || 0
+        });
+    };
 
     useEffect(() => {
         if(token){
@@ -148,13 +151,18 @@ const BlogsManage = ({ userId }) => {
                     blogs == null ? <Loader />:
                     blogs.results.length ? 
                         <>
-                        {
-                            blogs.results.map((blog , i) => {
-                                return <div key={i}>
-                                   <UserCard blog={{...blog, index: i, setStateFunc: setBlogs}} />
-                                </div>
-                            })
-                        }
+                            {
+                                blogs.results.map((blog , i) => {
+                                    return  <div key={blog.blog_id}>
+                                    <UserCard blog={{...blog, index: i, setStateFunc: setBlogs}} />
+                                    </div>
+                                })
+                            }
+
+                            <Pagination
+                                state={blogs}
+                                fetchDataFun={getPublishedBlogs}
+                            />
                         </>
                     : <NoDataMessage message="No Published blogs"/>
                 }
@@ -164,13 +172,19 @@ const BlogsManage = ({ userId }) => {
                     drafts == null ? <Loader />:
                     drafts.results.length ? 
                         <>
-                        {
-                            drafts.results.map((blog , i) => {
-                                return <div key={i}>
-                                   <ManageDraftBlog blog={{...blog, index: i+1, setStateFunc: setDrafts}} />
-                                </div>
-                            })
-                        }
+                            {
+                                drafts.results.map((blog , i) => {
+                                    return <div key={blog.blog_id}>
+                                    <ManageDraftBlog blog={{...blog, index: i, setStateFunc: setDrafts}} />
+                                    </div>
+                                })
+                            }
+
+                            <Pagination
+                                state={drafts}
+                                fetchDataFun={getDraftBlogs}
+                            />
+
                         </>
                     : <NoDataMessage message="No drafts blogs"/>
                 }

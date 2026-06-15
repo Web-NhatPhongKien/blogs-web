@@ -8,7 +8,7 @@ import Pagination from "../components/pagination.component";
 import axios from "axios";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import { UserCard } from "../components/usercard.component";
-import UserCardsearch from "../components/userCardsearch";
+import UserCardsearch from "../components/userCardsearch.component";
 
 const SearchPage = () => {
 
