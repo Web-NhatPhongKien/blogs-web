@@ -697,6 +697,52 @@
   }
 }
 
+/* -------------------CHANGE PASSWORD------------------ */
+/* Wrapper chỉ dùng để đặt nút con mắt vào trong input */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Input vẫn kế thừa CSS từ .edit-field input */
+.password-input-wrapper input {
+  padding-right: 52px;
+}
+
+/* Nút con mắt */
+.password-eye-btn {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #6b6b6b;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.password-eye-btn:hover {
+  color: #1a8917;
+  background: rgba(26, 137, 23, 0.08);
+}
+
+.password-eye-btn i {
+  display: flex;
+  font-size: 18px;
+  line-height: 1;
+}
+
 /*  CSS CỦA DUY NHẤT ĐỪNG ĐỤNG ZÔ */
 
 /* ─────────────────────────────────────────────

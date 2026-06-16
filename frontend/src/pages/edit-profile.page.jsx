@@ -33,6 +33,13 @@ const EditProfile = () => {
         confirmPassword: "",
     });
 
+    // THÊM: quản lý trạng thái hiện/ẩn riêng cho từng ô mật khẩu
+    const [showPassword, setShowPassword] = useState({
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false,
+    });
+
     // THÊM: loading riêng cho đổi mật khẩu
     const [passwordLoading, setPasswordLoading] = useState(false);
 
@@ -77,6 +84,14 @@ const EditProfile = () => {
         setPasswordForm((prev) => ({
             ...prev,
             [name]: value,
+        }));
+    };
+
+    // THÊM: bật/tắt hiển thị mật khẩu của từng ô
+    const togglePasswordVisibility = (fieldName) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [fieldName]: !prev[fieldName],
         }));
     };
 
@@ -416,7 +431,7 @@ const EditProfile = () => {
                             />
                         </div>
 
-                        <div className="edit-field">
+                        {/* <div className="edit-field">
                             <label>Twitter</label>
                             <input
                                 type="text"
@@ -425,7 +440,7 @@ const EditProfile = () => {
                                 onChange={handleChange}
                                 placeholder="https://twitter.com/..."
                             />
-                        </div>
+                        </div> */}
 
                         <div className="edit-field">
                             <label>Github</label>
@@ -479,35 +494,102 @@ const EditProfile = () => {
 
                         <div className="edit-field">
                             <label>Mật khẩu hiện tại</label>
-                            <input
-                                type="password"
-                                name="currentPassword"
-                                value={passwordForm.currentPassword}
-                                onChange={handlePasswordChange}
-                                placeholder="Nhập mật khẩu hiện tại"
-                            />
+
+                            {/* THÊM wrapper để đặt icon mắt vào trong input */}
+                            <div className="password-input-wrapper">
+                                <input
+                                    type={showPassword.currentPassword ? "text" : "password"}
+                                    name="currentPassword"
+                                    value={passwordForm.currentPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Nhập mật khẩu hiện tại"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-eye-btn"
+                                    onClick={() => togglePasswordVisibility("currentPassword")}
+                                    aria-label={
+                                        showPassword.currentPassword
+                                            ? "Ẩn mật khẩu"
+                                            : "Hiện mật khẩu"
+                                    }
+                                >
+                                    <i
+                                        className={
+                                            showPassword.currentPassword
+                                                ? "fi fi-rr-eye-crossed"
+                                                : "fi fi-rr-eye"
+                                        }
+                                    ></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="edit-field">
                             <label>Mật khẩu mới</label>
-                            <input
-                                type="password"
-                                name="newPassword"
-                                value={passwordForm.newPassword}
-                                onChange={handlePasswordChange}
-                                placeholder="Nhập mật khẩu mới"
-                            />
+
+                            <div className="password-input-wrapper">
+                                <input
+                                    type={showPassword.newPassword ? "text" : "password"}
+                                    name="newPassword"
+                                    value={passwordForm.newPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Nhập mật khẩu mới"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-eye-btn"
+                                    onClick={() => togglePasswordVisibility("newPassword")}
+                                    aria-label={
+                                        showPassword.newPassword
+                                            ? "Ẩn mật khẩu"
+                                            : "Hiện mật khẩu"
+                                    }
+                                >
+                                    <i
+                                        className={
+                                            showPassword.newPassword
+                                                ? "fi fi-rr-eye-crossed"
+                                                : "fi fi-rr-eye"
+                                        }
+                                    ></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="edit-field">
                             <label>Xác nhận mật khẩu mới</label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={passwordForm.confirmPassword}
-                                onChange={handlePasswordChange}
-                                placeholder="Nhập lại mật khẩu mới"
-                            />
+
+                            <div className="password-input-wrapper">
+                                <input
+                                    type={showPassword.confirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    value={passwordForm.confirmPassword}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Nhập lại mật khẩu mới"
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-eye-btn"
+                                    onClick={() => togglePasswordVisibility("confirmPassword")}
+                                    aria-label={
+                                        showPassword.confirmPassword
+                                            ? "Ẩn mật khẩu"
+                                            : "Hiện mật khẩu"
+                                    }
+                                >
+                                    <i
+                                        className={
+                                            showPassword.confirmPassword
+                                                ? "fi fi-rr-eye-crossed"
+                                                : "fi fi-rr-eye"
+                                        }
+                                    ></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="edit-actions">
