@@ -6,7 +6,7 @@ class NotificationController {
             const userId = req.user.userId;
             const filter = req.query.filter || "all"; // "all" | "unread"
             const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 20;
+            const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 50);
 
             const result = await NotificationService.getNotificationsService(userId, filter, page, limit);
 

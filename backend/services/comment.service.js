@@ -91,7 +91,7 @@ class CommentService {
         };
     };
 
-    getBlogCommentsService = async (blog_id, skip = 0, limit = 5) => {
+    getBlogCommentsService = async (blog_id, skip = 0, limit) => {
         return await Comment.find({
                         blog_id,
                         $or: [{ isReply: false }, { isReply: { $exists: false } }]
