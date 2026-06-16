@@ -73,7 +73,7 @@ const App = () => {
                     <Route path="tags" element={<AdminTags />} />
                 </Route>
                 <Route path="search/:query" element={<SearchPage />} />
-                <Route path="user/:id" element={<Profile />} />
+                <Route path="user/:username" element={<Profile />} />
                 <Route path="blog/:blog_id" element={<BlogPage />} />
                 <Route
                     path="notifications"
