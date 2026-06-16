@@ -10,13 +10,14 @@ import Pagination from "../components/pagination.component";
 
 
 const HomePage = () => {
+    const BLOGS_PER_PAGE = 5;
     let [ blogs, setBlogs ] = useState(null);
     let [ trendingBlogs, setTrendingBlogs ] = useState(null);    
     let [ categories, setCategories ] = useState([]);
     let [ pageState, setPageState ] = useState("Trang chủ");
 
     const fetchLatestBlogs = ({ page = 1 } = {}) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/latest-blogs", { page, limit: BLOGS_PER_PAGE })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
                     data: data.blogs,
@@ -33,7 +34,7 @@ const HomePage = () => {
     }
 
     const fetchBlogsByCategory = ({ page = 1 }) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { tag: pageState, page })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/search-blogs", { tag: pageState, page, limit: BLOGS_PER_PAGE })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
                     data: data.blogs,
@@ -50,7 +51,7 @@ const HomePage = () => {
     };
 
     const fetchTrendingBlogs = () => {
-        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blogs")
+        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/trending-blogs")
         .then(({ data }) => {
             setTrendingBlogs(data.blogs);
         })
@@ -61,7 +62,7 @@ const HomePage = () => {
     }
 
     const fetchPopularTags = () => {
-        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/popular-tags")
+        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/popular-tags")
         .then(({ data }) => {
             setCategories(data.tags || []);
         })

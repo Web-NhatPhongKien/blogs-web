@@ -3,24 +3,51 @@ import Notification from "../schemas/notification.schema.js";
 import BlogLike from "../schemas/blog-like.schema.js";
 
 class BlogService {
-    getLatestBlogsService = async (page, maxLimit) => {
-        return await Blog.find({ draft: false })
-            .populate("author", "personal_info.profile_img personal_info.username -_id")
-            .sort({ publishedAt: -1 })
-            .select("blog_id title des banner activity tags publishedAt -_id")
-            .skip((page - 1) * maxLimit)
-            .limit(maxLimit);
+    buildSearchQuery = ({ tag, query, author, eliminate_blog }) => {
+        const findQuery = { draft: false };
+
+        if (tag) {
+            findQuery.tags = tag;
+            if (eliminate_blog) findQuery.blog_id = { $ne: eliminate_blog };
+        } else if (query) {
+            findQuery.$text = { $search: query };
+        } else if (author) {
+            findQuery.author = author;
+        }
+
+        return findQuery;
     };
 
-    getTrendingBlogsService = async (maxLimit) => {
+    getLatestBlogsService = async (page, limit) => {
+        const findQuery = { draft: false };
+        const skipDocs = (page - 1) * limit;
+
+        const [blogs, totalDocs] = await Promise.all([
+            Blog.find(findQuery)
+                .populate("author", "personal_info.profile_img personal_info.username -_id")
+                .sort({ publishedAt: -1 })
+                .select("blog_id title des banner activity tags publishedAt -_id")
+                .skip(skipDocs)
+                .limit(limit),
+            Blog.countDocuments(findQuery)
+        ]);
+
+        return {
+            blogs,
+            totalDocs,
+            totalPages: Math.ceil(totalDocs / limit)
+        };
+    };
+
+    getTrendingBlogsService = async (limit) => {
         return await Blog.find({ draft: false })
             .populate("author", "personal_info.profile_img personal_info.username -_id")
             .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
             .select("blog_id title publishedAt -_id")
-            .limit(maxLimit);
+            .limit(limit);
     };
 
-    getPopularTagsService = async (maxLimit) => {
+    getPopularTagsService = async (limit) => {
         return await Blog.aggregate([
             { $match: { draft: false } },
             { $unwind: "$tags" },
@@ -32,39 +59,37 @@ class BlogService {
                 }
             },
             { $sort: { totalBlogs: -1, name: 1 } },
-            { $limit: maxLimit }
+            { $limit: limit }
         ]);
     };
 
     searchBlogsService = async ({ tag, query, author, page, limit, eliminate_blog }) => {
-        let findQuery = { draft: false };
-
-        if (tag) {
-            findQuery.tags = tag;
-            if (eliminate_blog) findQuery.blog_id = { $ne: eliminate_blog };
-        } else if (query) {
-            findQuery.$text = { $search: query };
-        } else if (author) {
-            findQuery.author = author;
-        }
-
+        const findQuery = this.buildSearchQuery({ tag, query, author, eliminate_blog });
         const skipDocs = (page - 1) * limit;
+        let blogsQuery;
 
         if (query && !tag) {
-            return await Blog.find(findQuery, { score: { $meta: "textScore" } })
+            blogsQuery = Blog.find(findQuery, { score: { $meta: "textScore" } })
                 .populate("author", "personal_info.profile_img personal_info.username -_id")
                 .sort({ score: { $meta: "textScore" }, publishedAt: -1 })
-                .select("blog_id title des banner activity tags publishedAt -_id")
-                .skip(skipDocs)
-                .limit(limit);
+                .select("blog_id title des banner activity tags publishedAt -_id");
+        } else {
+            blogsQuery = Blog.find(findQuery)
+                .populate("author", "personal_info.profile_img personal_info.username -_id")
+                .sort({ publishedAt: -1 })
+                .select("blog_id title des banner activity tags publishedAt -_id");
         }
 
-        return await Blog.find(findQuery)
-            .populate("author", "personal_info.profile_img personal_info.username -_id")
-            .sort({ publishedAt: -1 })
-            .select("blog_id title des banner activity tags publishedAt -_id")
-            .skip(skipDocs)
-            .limit(limit);
+        const [blogs, totalDocs] = await Promise.all([
+            blogsQuery.skip(skipDocs).limit(limit),
+            Blog.countDocuments(findQuery)
+        ]);
+
+        return {
+            blogs,
+            totalDocs,
+            totalPages: Math.ceil(totalDocs / limit)
+        };
     };
 
     getBlogService = async (blog_id, draft, mode, user_id) => {
@@ -110,24 +135,6 @@ class BlogService {
         }
 
         return { blog, liked_by_user };
-    };
-
-    getAllLatestBlogsCountService = async () => {
-        return await Blog.countDocuments({ draft: false });
-    };
-
-    getSearchBlogsCountService = async ({ tag, query, author }) => {
-        let findQuery = { draft: false };
-
-        if (tag) {
-            findQuery.tags = tag;
-        } else if (query) {
-            findQuery.$text = { $search: query };
-        } else if (author) {
-            findQuery.author = author;
-        }
-
-        return await Blog.countDocuments(findQuery);
     };
 
     toggleLikeBlogService = async (user_id, blog_id, isLikedByUser) => {
