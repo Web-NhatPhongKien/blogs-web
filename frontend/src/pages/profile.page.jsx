@@ -41,7 +41,7 @@ const Profile = () => {
         // THÊM: lấy profile của user khác từ backend
         const serverDomain = import.meta.env.VITE_SERVER_DOMAIN || "http://localhost:3000";
 
-        const response = await fetch(`${serverDomain}/get-profile`,
+        const response = await fetch(`${serverDomain}/api/user/get-profile`,
           {
             method: "POST",
             headers: {

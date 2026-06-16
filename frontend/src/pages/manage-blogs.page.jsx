@@ -31,7 +31,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
             return;
         }
 
-        axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/search-blogs`, {
+        axios.post(`${import.meta.env.VITE_SERVER_DOMAIN}/api/blogs/search-blogs`, {
             // userId ở đây là _id của user đang được xem
             author: userId,
             page,
@@ -63,7 +63,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
 
 
     const getBlogs = ({ page, draft, deletedDocCount = 0 }) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/user-written-blogs", {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/user-written-blogs", {
             page, draft, query, deletedDocCount
         }, {
             headers: {
@@ -76,7 +76,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                     data: data.blogs,
                     page,
                     user: token,
-                    countRoute: "/user-written-blogs-count",
+                    countRoute: "/api/blogs/user-written-blogs-count",
                     data_to_send: { draft, query }
                 })
 

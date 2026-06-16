@@ -5,7 +5,7 @@ import SearchPage from "./pages/search.page";
 import PageNotFound from "./pages/404.page";
 import Profile from "./pages/profile.page";
 import EditProfile from "./pages/edit-profile.page";
-import Editor from "./components/editor.pages";
+import Editor from "./pages/editor.pages";
 import Register from "./pages/register.page";
 import Login from "./pages/login.page";
 import ProtectedRoute from "./routes/protected.route";

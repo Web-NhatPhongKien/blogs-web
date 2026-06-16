@@ -33,7 +33,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             return toast.error("Vui lòng nhập nội dung bình luận");
         }
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/add-comment", {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/comments/add-comment", {
             _id,
             blog_author,
             comment,

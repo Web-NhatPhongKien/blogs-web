@@ -28,9 +28,9 @@ class CommentController {
     getBlogComments = async (req, res, next) => {
         try {
             const { blog_id, skip } = req.body;
-            const max_limit = 5;
+            const limit = 5;
 
-            const comments = await CommentService.getBlogCommentsService(blog_id, skip, max_limit);
+            const comments = await CommentService.getBlogCommentsService(blog_id, skip, limit);
 
             return res.status(200).json(comments);
         } catch (err) {

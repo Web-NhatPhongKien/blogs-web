@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { editorContext } from "./editor.pages";
+import { editorContext } from "../pages/editor.pages";
 
 
 

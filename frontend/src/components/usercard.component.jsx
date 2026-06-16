@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { getDay } from "../common/date";
 import dfBanner from "../imgs/dfBanner.png";
 import axios from "axios";
-
+import toast from "react-hot-toast";
 
 export const UserCard = ({ blog }) => {
     if (!blog) return null;
@@ -34,8 +34,8 @@ export const UserCard = ({ blog }) => {
             <div className="flex flex-col justify-between">
                 <div className="flex items-center justify-between ">
                     <div className="flex gap-10">
-                        <Link to={`/editor/${blog_id}`} className="hover:underline">Edit</Link>
-                        <button className=" hover:underline text-red" onClick={(e) =>{deleteBlog(blog, token, e.target)}}>Delete</button>
+                        <Link to={`/editor/${blog_id}`} className="hover:underline">Chỉnh sửa</Link>
+                        <button className=" hover:underline text-red" onClick={(e) =>{confirmDelete(blog, token, e.currentTarget)}}>Xóa</button>
                     </div>
                     <div className="flex gap-5 justify-between">
                         <div className="flex items-center gap-2 text-dark-grey">
@@ -50,7 +50,7 @@ export const UserCard = ({ blog }) => {
                     
                 </div>
                     <p className="!text-[10px] text-gray self-end whitespace-nowrap">
-                        Publish on {getDay(publishedAt)}
+                        Đăng ngày {getDay(publishedAt)}
                     </p>
             </div>
 
@@ -67,8 +67,8 @@ export const ManageDraftBlog = ({blog}) =>{
     const token = sessionStorage.getItem("token");
 
     return(
-        <div>
-            <div className="flex items-center gap-5 mb-4">
+        <div className="border-b border-grey mb-6 mt-3">
+            <div className="flex items-center gap-5 mb-4 ">
                 <h1 className="text-xl text-dark-grey">{String(index + 1).padStart(2, "0")}</h1>
                 <img src={banner || dfBanner} alt={title} className="w-32 h-32 rounded-[20px] flex-none bg-grey object-cover" />
                 <div>
@@ -85,7 +85,7 @@ export const ManageDraftBlog = ({blog}) =>{
                 <div className="flex gap-10 ">
                     <h1></h1>
                     <Link to={`/editor/${blog_id}`} className="hover:underline">Edit</Link>
-                    <button className=" hover:underline text-red" onClick={(e) =>{deleteBlog(blog, token, e.target)}}>Delete</button>
+                    <button className=" hover:underline text-red" onClick={(e) =>{confirmDelete(blog, token, e.currentTarget)}}>Delete</button>
                 </div>
             </div>
         </div>
@@ -93,46 +93,75 @@ export const ManageDraftBlog = ({blog}) =>{
 }
 
 
-const deleteBlog = (blog, token, target) => {
-    const { index, blog_id, setStateFunc } = blog;
+const confirmDelete = (blog, token, target) => {
+    toast((t) => (
+        <div >
+            <p>Bạn có muốn xóa bài này?</p>
 
-    target.disabled = true;
+            <button className="mr-5"
+                onClick={() => {
+                    toast.dismiss(t.id);
+                    deleteBlog(blog, token, target);
+                }}
+            >
+                Yes
+            </button>
 
-    axios.post(
-        import.meta.env.VITE_SERVER_DOMAIN + "/delete-blog",
-        { blog_id },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    )
-    .then(() => {
-        target.disabled = false;
-
-        setStateFunc((preVal) => {
-            if (!preVal || !Array.isArray(preVal.results)) {
-                return preVal;
-            }
-
-            const updatedResults = preVal.results.filter(
-                (_, currentIndex) => currentIndex !== index
-            );
-
-            if (!updatedResults.length && preVal.totalDocs - 1 > 0) {
-                return null;
-            }
-
-            return {
-                ...preVal,
-                results: updatedResults,
-                totalDocs: Math.max(preVal.totalDocs - 1, 0),
-                deletedDocCount: (preVal.deletedDocCount || 0) + 1
-            };
-        });
-    })
-    .catch((err) => {
-        target.disabled = false;
-        console.log(err.response?.data || err.message);
+            <button onClick={() => toast.dismiss(t.id)}>
+                No
+            </button>
+        </div>
+    ), {
+        duration: Infinity
     });
+};
+
+const deleteBlog = (blog, token, target) => {
+    
+    try {
+            const { index, blog_id, setStateFunc } = blog;
+
+            target.disabled = true;
+
+            axios.post(
+                import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/delete-blog",
+                { blog_id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            .then(() => {
+                target.disabled = false;
+
+                setStateFunc((preVal) => {
+                    if (!preVal || !Array.isArray(preVal.results)) {
+                        return preVal;
+                    }
+
+                    const updatedResults = preVal.results.filter(
+                        (_, currentIndex) => currentIndex !== index
+                    );
+
+                    if (!updatedResults.length && preVal.totalDocs - 1 > 0) {
+                        return null;
+                    }
+
+                    return {
+                        ...preVal,
+                        results: updatedResults,
+                        totalDocs: Math.max(preVal.totalDocs - 1, 0),
+                        deletedDocCount: (preVal.deletedDocCount || 0) + 1
+                    };
+                });
+            })
+    } catch (err) {
+        console.error("DELETE BLOG ERROR:", err);
+        console.error(err.stack);
+
+        return res.status(500).json({
+            error: err.message
+        });
+    }
 };

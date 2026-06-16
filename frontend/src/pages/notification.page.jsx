@@ -17,16 +17,16 @@ const formatTimeAgo = (dateStr) => {
     const diffHour = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHour / 24);
 
-    if (diffSec < 60) return "vua xong";
-    if (diffMin < 60) return `${diffMin} phut truoc`;
-    if (diffHour < 24) return `${diffHour} gio truoc`;
-    if (diffDay < 30) return `${diffDay} ngay truoc`;
+    if (diffSec < 60) return "vừa xong";
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffDay < 30) return `${diffDay} ngày trước`;
     return date.toLocaleDateString("vi-VN");
 };
 
 const getNotificationMessage = (notification) => {
-    const actorName = notification.user?.personal_info?.username || "Ai do";
-    const blogTitle = notification.blog?.title || "mot bai viet";
+    const actorName = notification.user?.personal_info?.username || "Ai đó";
+    const blogTitle = notification.blog?.title || "một bài viết";
 
     switch (notification.type) {
         case "like":
@@ -219,14 +219,14 @@ const NotificationPage = () => {
                         className={`notification-filter-btn${filter === "all" ? " active" : ""}`}
                         onClick={() => handleFilterChange("all")}
                     >
-                        Tat ca
+                        Tất cả
                     </button>
 
                     <button
                         className={`notification-filter-btn${filter === "unread" ? " active" : ""}`}
                         onClick={() => handleFilterChange("unread")}
                     >
-                        Chua doc
+                        Chưa đọc
                         {unreadCount > 0 && (
                             <span className="notification-filter-count">{unreadCount}</span>
                         )}
