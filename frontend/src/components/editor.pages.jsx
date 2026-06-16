@@ -1,7 +1,9 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BlogEditor from "./blog.editor";
-import userSchema from "../../../backend/schemas/user.schema";
+// XÓA: frontend không được import Mongoose schema từ backend
+//import userSchema from "../../../backend/schemas/user.schema";
+// THÊM: lấy user đăng nhập từ AuthContext của frontend
 import PublishForm from "../components/publish-form"
 import { useAuth } from "../context/auth.context";
 import { Navigate } from "react-router-dom";
@@ -14,7 +16,10 @@ const blogStructure = {
     content: [],
     tags: [],
     des: '',
-    author: {userSchema:{}}
+    // SỬA: cấu trúc author sau khi backend populate user
+    author: {
+        personal_info: {}
+    }
 }
 
 export const editorContext = createContext({});
@@ -57,7 +62,7 @@ const Editor = () => {
             <editorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor}}>
                 {
                 
-                token == null? <Navigate to="login" />:
+                token == null ? <Navigate to="login" replace/>:
                 loading ? <p className="text-center mt-20" >Loading...</p> :
                 editorState === "editor" ? 
                     <BlogEditor setEditorState={setEditorState}/> 
