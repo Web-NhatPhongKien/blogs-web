@@ -2,6 +2,7 @@ import { useState } from 'react';
 import API from '../services/authApi.service';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import '../index.css';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -13,6 +14,9 @@ export default function Register() {
     });
 
     const [loading, setLoading] = useState(false);
+
+    // THÊM: trạng thái hiện hoặc ẩn mật khẩu
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({
@@ -126,16 +130,36 @@ export default function Register() {
                 </div>
 
                 <div className="input-group">
-                    <input
-                        name="password"
-                        type="password"
-                        placeholder="Mật khẩu"
-                        className="input-box"
-                        value={form.password}
-                        onChange={handleChange}
-                        autoComplete="new-password"
-                    />
-                    <i className="fi fi-rr-key input-icon"></i>
+                    {/* Tận dụng password-input-wrapper đã có trong index.css */}
+                    <div className="password-input-wrapper">
+                        <input
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Mật khẩu"
+                            className="input-box"
+                            value={form.password}
+                            onChange={handleChange}
+                            autoComplete="new-password"
+                        />
+
+                        <i className="fi fi-rr-key input-icon"></i>
+
+                        <button
+                            type="button"
+                            className="password-eye-btn"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                            title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        >
+                            <i
+                                className={
+                                    showPassword
+                                        ? "fi fi-rr-eye-crossed"
+                                        : "fi fi-rr-eye"
+                                }
+                            ></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button className="btn-dark" type="submit" disabled={loading}>
