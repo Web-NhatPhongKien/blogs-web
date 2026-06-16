@@ -10,7 +10,7 @@ import { getAuthConfig } from "../common/auth-config";
 const CommentCard = ({ index, leftVal, commentData }) => {
 
     let {
-        commented_by: { personal_info: { profile_image, fullname, username: commented_by_username } },
+        commented_by: { personal_info: { profile_img, username: commented_by_username } },
         commentedAt, comment, _id, children, isDeleted
     } = commentData;
 
@@ -166,10 +166,10 @@ const CommentCard = ({ index, leftVal, commentData }) => {
                 {
                     !isDeleted ? (
                         <div className="comment-card-header">
-                            <img src={profile_image} className="comment-card-avatar" />
+                            <img src={profile_img} className="comment-card-avatar" />
 
                             <p className="comment-card-author">
-                                {fullname} <span className="comment-card-username">@{commented_by_username}</span>
+                                <span className="comment-card-username">@{commented_by_username}</span>
                             </p>
 
                             <p className="comment-card-date">{getDay(commentedAt)}</p>

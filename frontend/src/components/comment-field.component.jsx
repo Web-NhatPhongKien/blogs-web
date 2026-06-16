@@ -12,8 +12,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
     const { user } = useAuth();
     const access_token = sessionStorage.getItem("token");
     const username = user?.personal_info?.username;
-    const fullname = user?.personal_info?.fullname || username;
-    const profile_image = user?.personal_info?.profile_image || user?.personal_info?.profile_img;
+    const profile_img = user?.personal_info?.profile_image || user?.personal_info?.profile_img;
     
     let { 
         blog, 
@@ -42,7 +41,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
         .then(({ data }) => {
             setComment("");
 
-            data.commented_by = { personal_info: { username, profile_image, fullname } };
+            data.commented_by = { personal_info: { username, profile_img } };
 
             let newCommentArr;
 
