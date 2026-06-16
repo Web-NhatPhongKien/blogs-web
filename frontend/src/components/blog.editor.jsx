@@ -2,7 +2,7 @@ import logo from "../imgs/logo.png";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import dfBanner from "../imgs/dfBanner.png";
 import React, { useContext, useEffect,useRef } from "react";
-import { editorContext } from "./editor.pages";
+import { editorContext } from "../pages/editor.pages";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "./tools.components";
 import { toast } from "react-hot-toast";
@@ -22,7 +22,7 @@ const BlogEditor = () => {
         let editor = new EditorJS({
             holder:"textEditor",
             data: content,
-            placeholder:"Let's write an awesome story",
+            placeholder:"Hãy viết nội dung bài viết tại đây...",
             tools: tools
         });
         setTextEditor(editor);
@@ -77,10 +77,10 @@ const BlogEditor = () => {
 
     const handlePublishEvent = () => {
         if (!blog.banner.length) {
-            return toast.error("Upload a blog banner to publish!");
+            return toast.error("Vui lòng tải ảnh bìa trước khi đăng bài!");
         }
         if(!blog.title.length){
-            return toast.error("Write blog tilte to publish!");
+            return toast.error("Vui lòng nhập tiêu đề trước khi đăng bài!");
         }
         textEditor.isReady
             .then(() => textEditor.save())
@@ -89,7 +89,7 @@ const BlogEditor = () => {
                     setBlog({ ...blog, content: data });
                     setEditorState("publish");
                 } else {
-                    return toast.error("Write something in your blog to publish it!");
+                    return toast.error("Vui lòng nhập nội dung trước khi đăng bài!");
                 }
             })
             .catch(err => {
@@ -106,12 +106,12 @@ const BlogEditor = () => {
 
 
         if(!title.length){
-            return toast.error("Write blog title before save Draft")
+            return toast.error("Vui lòng nhập tiêu đề trước khi lưu nháp")
         }
 
         button.classList.add("disable");
 
-        const loadingToast = toast.loading("Saving...");
+        const loadingToast = toast.loading("Đang lưu bản nháp...");
         await textEditor.isReady;
         const savedContent = await textEditor.save();
 
@@ -125,9 +125,8 @@ const BlogEditor = () => {
             }
         )
         .then(({ data }) => {
-            console.log("Save draft success:", data);
-
-            toast.success("Saved draft", {
+            console.log("Lưu bản nháp thành công:", data);
+            toast.success("Đã lưu bản nháp", {
             id: loadingToast 
             });
             setTimeout(() => {
@@ -135,9 +134,9 @@ const BlogEditor = () => {
             }, 800);
         })
         .catch((err) => {
-            console.log("Save draft error:", err.response?.data || err.message);
+            console.log("Lỗi khi lưu bản nháp:", err.response?.data || err.message);
             button.classList.remove("disable");
-            toast.error(err.response?.data?.error || "Something went wrong", {
+            toast.error(err.response?.data?.error || "Đã xảy ra lỗi khi lưu bản nháp", {
                 id: loadingToast
             });
         });
@@ -150,22 +149,22 @@ const BlogEditor = () => {
                 <Link to="/" className="flex-none w-10">
                     <img src={logo} className="w-full" alt="logo" />
                 </Link>
-                <p className="line-clamp-1 w-full font-medium ml-4">{blog.title && blog.title.length ? blog.title : "New Blog"}</p>
+                <p className="line-clamp-1 w-full font-medium ml-4">{blog.title && blog.title.length ? blog.title : "Bài viết mới"}</p>
                 <div className="flex gap-4 ml-auto">
-                    <button className="btn-dark px-4 py-2 text-sm" onClick={handlePublishEvent}>Publish</button>
-                    <button className="btn-light px-4 py-2 text-sm" onClick={handleSaveDraft}>Save Draft</button>
+                    <button className="btn-dark px-4 py-2 text-sm" onClick={handlePublishEvent}>Đăng bài</button>
+                    <button className="btn-light px-4 py-2 text-sm" onClick={handleSaveDraft}>Lưu nháp</button>
                 </div>
             </nav>
             <section>
                 <div className="mx-auto max-w-[800px] w-full">
                     <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-100 rounded overflow-hidden cursor-pointer">
                         <label htmlFor="uploadBanner" className="cursor-pointer">
-                            <img src={blog.banner || dfBanner} className="w-full h-full object-cover" alt="banner" />
+                            <img src={blog.banner || dfBanner} className="w-full h-full object-cover" alt="Ảnh bìa bài viết" />
                             <input id="uploadBanner" type="file" accept=".png, .jpg, .jpeg" hidden onChange={handleImg} />
                         </label>
                     </div>
                     <textarea 
-                        placeholder="Blog Title" 
+                        placeholder="Tiêu đề bài viết" 
                         value={blog.title}
                         className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight"
                         onKeyDown={handleKeyDown}
