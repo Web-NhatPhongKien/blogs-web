@@ -71,7 +71,7 @@ const BlogsManage = ({ userId }) => {
         
         })
         .catch(err => {
-            console.log(err)
+            console.log("Lỗi khi tải danh sách bài viết:",err)
         })
     }
 
@@ -130,12 +130,12 @@ const BlogsManage = ({ userId }) => {
         <>
         
         <div className="profile-post-placeholder">
-            <h1>Manage Blogs</h1>
+            <h1>Quản lý bài viết</h1>
             <Toaster/>
             <div className="relative max-md:mt-5 md:mt-8 mb-10">
                 <input
                     type="search"
-                    placeholder="Search Blogs"
+                    placeholder="Tìm kiếm bài viết"
                     className="w-full bg-grey p-4 pl-12 pr-6 rounded-full"
                     value={query}
                     onChange={handleSearchChange}
@@ -145,7 +145,7 @@ const BlogsManage = ({ userId }) => {
                 <i className="fi fi-rr-search absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
             </div>
 
-            <InPageNavigation routes= {["Published Blogs", "Drafts"]}>
+            <InPageNavigation routes= {["Bài đã đăng", "Bản nháp"]}>
 
                 {
                     blogs == null ? <Loader />:
@@ -164,7 +164,7 @@ const BlogsManage = ({ userId }) => {
                                 fetchDataFun={getPublishedBlogs}
                             />
                         </>
-                    : <NoDataMessage message="No Published blogs"/>
+                    : <NoDataMessage message="Chưa có bài viết nào được đăng"/>
                 }
 
 
@@ -186,7 +186,7 @@ const BlogsManage = ({ userId }) => {
                             />
 
                         </>
-                    : <NoDataMessage message="No drafts blogs"/>
+                    : <NoDataMessage message="Chưa có bản nháp nào"/>
                 }
 
             </InPageNavigation>

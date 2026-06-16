@@ -34,8 +34,8 @@ export const UserCard = ({ blog }) => {
             <div className="flex flex-col justify-between">
                 <div className="flex items-center justify-between ">
                     <div className="flex gap-10">
-                        <Link to={`/editor/${blog_id}`} className="hover:underline">Edit</Link>
-                        <button className=" hover:underline text-red" onClick={(e) =>{confirmDelete(blog, token, e.currentTarget)}}>Delete</button>
+                        <Link to={`/editor/${blog_id}`} className="hover:underline">Chỉnh sửa</Link>
+                        <button className=" hover:underline text-red" onClick={(e) =>{confirmDelete(blog, token, e.currentTarget)}}>Xóa</button>
                     </div>
                     <div className="flex gap-5 justify-between">
                         <div className="flex items-center gap-2 text-dark-grey">
@@ -50,7 +50,7 @@ export const UserCard = ({ blog }) => {
                     
                 </div>
                     <p className="!text-[10px] text-gray self-end whitespace-nowrap">
-                        Publish on {getDay(publishedAt)}
+                        Đăng ngày {getDay(publishedAt)}
                     </p>
             </div>
 
