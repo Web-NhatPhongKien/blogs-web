@@ -11,6 +11,7 @@ import { UserCard } from "../components/usercard.component";
 import UserCardsearch from "../components/userCardsearch.component";
 
 const SearchPage = () => {
+    const BLOGS_PER_PAGE = 5;
 
     let { query } = useParams();
 
@@ -19,7 +20,7 @@ const SearchPage = () => {
 
 
     const searchBlogs = ({ page = 1 }) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { query, page })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/search-blogs", { query, page, limit: BLOGS_PER_PAGE })
             .then(async ({ data }) => {
                 // Xử lý và tái cấu trúc dữ liệu để phục vụ phân trang (pagination)
                 let formattedData = await filterPaginationData({
@@ -37,7 +38,7 @@ const SearchPage = () => {
     };
 
     const fetchUsers = () => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users", { query })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/user/search-users", { query })
             .then(({ data }) => {
                 setUsers(data.users);
             })
@@ -69,7 +70,7 @@ const SearchPage = () => {
                                 <UserCardsearch user={user} />
                             );
                         })
-                    : <NoDataMessage message="No user found" />
+                    : <NoDataMessage message="Không tìm thấy người dùng" />
                 )}
             </>
         );
@@ -92,7 +93,7 @@ const SearchPage = () => {
                                         <BlogPostCard content={blog} author={blog.author.personal_info} />
                                     );
                                 })
-                            : <NoDataMessage message="No blogs published" />
+                            : <NoDataMessage message="Chưa có bài viết nào được đăng" />
                         )}
                         <Pagination state={blogs} fetchDataFun={searchBlogs} />
                     </>

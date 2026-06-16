@@ -87,7 +87,7 @@ const PublishForm = () => {
         let blogObj = { title, banner, des, content, tags, draft: false, id: blog_id || blog.blog_id };
         console.log("Publish data:", blogObj);
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/create-blog", blogObj, getAuthConfig())
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/api/blogs/create-blog", blogObj, getAuthConfig())
         .then(({ data }) => {
         console.log("Publish success:", data);
 

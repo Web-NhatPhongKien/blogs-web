@@ -64,7 +64,7 @@ const BlogPage = () => {
             }
         } : {};
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id }, config)
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/user/get-blog", { blog_id }, config)
             .then(async ({ data: { blog, liked_by_user } }) => {
                 
                 blog.comments = await fetchComments({ 
@@ -75,7 +75,7 @@ const BlogPage = () => {
                 setBlog(blog); 
                 setLikedByUser(Boolean(liked_by_user));
 
-                axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { 
+                axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/search-blogs", { 
                     tag: blog.tags, 
                     limit: 6, 
                     eliminate_blog: blog_id 

@@ -37,7 +37,7 @@ const BlogInteraction = () => {
             setBlog({ ...blog, activity: { ...activity, total_likes } });
 
 
-            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/like-blog", { _id, isLikedByUser }, getAuthConfig())
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/like-blog", { _id, isLikedByUser }, getAuthConfig())
             .then(({ data }) => {
                 console.log(data);
             })
@@ -47,7 +47,7 @@ const BlogInteraction = () => {
 
         } else {
 
-            toast.error("Please log in to like this blog");
+            toast.error("Đăng nhập để thích bài viết này");
         }
     };
 

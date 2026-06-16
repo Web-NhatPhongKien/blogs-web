@@ -81,7 +81,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     const loadReplies = () => {
         if (!children.length || commentData.isReplyLoaded) return;
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-replies-comments", { children })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/comments/get-replies-comments", { children })
             .then(({ data: { replies } }) => {
                 const existingIds = new Set(comments.results.map(comment => getId(comment._id)));
 
@@ -119,7 +119,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     const deleteComment = () => {
         setDeleting(true);
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment", { _id }, getAuthConfig())
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/comments/delete-comment", { _id }, getAuthConfig())
         .then(() => {
             const newResults = comments.results.map(comment => {
                 if (getId(comment._id) === getId(_id)) {

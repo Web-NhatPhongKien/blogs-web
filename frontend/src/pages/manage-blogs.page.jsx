@@ -24,7 +24,7 @@ const BlogsManage = ({ userId }) => {
 
 
     const getBlogs = ({ page = 1, draft, deletedDocCount = 0}) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/user-written-blogs",{
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN +"/api/blogs/user-written-blogs",{
             page, draft, query, deletedDocCount
         },{
             headers: {
@@ -37,12 +37,12 @@ const BlogsManage = ({ userId }) => {
                 data: data.blogs,
                 page,
                 user: token,
-                countRoute: "/user-written-blogs-count",
+                countRoute: "/api/blogs/user-written-blogs-count",
                 data_to_send: { draft, query }
             });
 
             const countResponse = await axios.post(
-                import.meta.env.VITE_SERVER_DOMAIN + "/user-written-blogs-count",
+                import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/user-written-blogs-count",
                 { draft, query },
                 {
                     headers: {
