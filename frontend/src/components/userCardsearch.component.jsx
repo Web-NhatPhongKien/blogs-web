@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const UserCardsearch = ({ user }) => {
 
-    let { personal_info: { fullname, username, profile_img } } = user;
+    let { personal_info: { username, profile_img } } = user;
 
     return (
 
@@ -11,7 +11,6 @@ const UserCardsearch = ({ user }) => {
             <img src={profile_img} className="user-card-avatar" />
 
             <div>
-                <h1 className="user-card-name">{fullname}</h1>
                 <p className="user-card-username">@{username}</p>
             </div>
             
