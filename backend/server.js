@@ -14,10 +14,18 @@ import notificationRoutes from "./routes/notification.route.js";
 import blogRoutes from "./routes/blog.route.js";
 import commentRoutes from "./routes/comment.route.js";
 const server = express();
+const PORT = process.env.PORT || 3000;
 
 server.use(cors());
 server.use(express.json());
 server.use(morgan('dev'));
+
+// THÊM: API kiểm tra backend có hoạt động sau khi deploy hay không
+server.get("/api/health", (req, res) => {
+  return res.status(200).json({
+    message: "Blog API is running",
+  });
+});
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -32,7 +40,8 @@ server.use("/api/comments", commentRoutes);
 server.use("/api/notifications", notificationRoutes); 
 
 
-server.listen(process.env.PORT, () => {
-  console.log('Listening on port ' + process.env.PORT);
+// SỬA: có port mặc định để chạy được cả local lẫn môi trường deploy
+server.listen(PORT, () => {
+  console.log("Listening on port " + PORT);
 });
 

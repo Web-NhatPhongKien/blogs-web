@@ -29,13 +29,12 @@ export const registerService = async (data) => {
     }
   });
 
-  return user;
+  // SỬA: không trả password hash về frontend
+  const safeUser = await User.findById(user._id).select("-personal_info.password");
+  return safeUser;
 };
 
-export const loginService = async ({
-  email,
-  password,
-}) => {
+export const loginService = async ({ email, password, }) => {
   const user = await User.findOne({ 'personal_info.email': email });
 
   if (!user) {
@@ -53,8 +52,8 @@ export const loginService = async ({
 
   const token = generateToken(user);
 
-  return {
-    token,
-    user,
-  };
+  // SỬA: loại password hash khỏi response đăng nhập
+  const safeUser = await User.findById(user._id).select("-personal_info.password");
+
+  return { token, user: safeUser };
 };
