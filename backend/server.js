@@ -8,15 +8,26 @@ import morgan from 'morgan';
 import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
-import userRoutes from "./routes/user.route.js"; 
+import userRoutes from "./routes/user.route.js";
 import adminRoutes from "./routes/admin.route.js";
-import notificationRoutes from "./routes/notification.route.js"; 
+import notificationRoutes from "./routes/notification.route.js";
 import blogRoutes from "./routes/blog.route.js";
 import commentRoutes from "./routes/comment.route.js";
 const server = express();
 const PORT = process.env.PORT || 3000;
 
-server.use(cors());
+// server.use(cors());
+// SỬA: chỉ cho phép frontend local và frontend production gọi API
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+server.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 server.use(express.json());
 server.use(morgan('dev'));
 
@@ -33,11 +44,11 @@ mongoose
   .catch((e) => console.error(e.message));
 
 server.use('/api/auth', authRoutes);
-server.use("/api/user", userRoutes); 
+server.use("/api/user", userRoutes);
 server.use("/api/admin", adminRoutes);
 server.use("/api/blogs", blogRoutes);
 server.use("/api/comments", commentRoutes);
-server.use("/api/notifications", notificationRoutes); 
+server.use("/api/notifications", notificationRoutes);
 
 
 // SỬA: có port mặc định để chạy được cả local lẫn môi trường deploy
