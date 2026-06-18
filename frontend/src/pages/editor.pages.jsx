@@ -36,6 +36,7 @@ const Editor = () => {
 
     let token = sessionStorage.getItem("token");
     let {blog_id} = useParams();
+    console.log("blog_id đang chỉnh sửa:", blog_id);
 
     useEffect(() => {
 
@@ -43,7 +44,7 @@ const Editor = () => {
             return setLoading(false)
         }
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog",{
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/get-blog",{
             blog_id, draft: true, mode: 'edit'
         })
         .then(({data: {blog}})  => {
@@ -62,8 +63,9 @@ const Editor = () => {
             <editorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor}}>
                 {
                 
-                token == null ? <Navigate to="login" replace/>:
-                loading ? <p className="text-center mt-20" >Loading...</p> :
+                token == null ? <Navigate to="/login" replace /> :
+                loading ? <p className="text-center mt-20">Đang tải...</p> :
+                blog == null ? <p className="text-center mt-20">Không tìm thấy bài viết</p> :
                 editorState === "editor" ? 
                     <BlogEditor setEditorState={setEditorState}/> 
                 : 
