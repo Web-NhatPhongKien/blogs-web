@@ -17,23 +17,23 @@ const formatTimeAgo = (dateStr) => {
     const diffHour = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHour / 24);
 
-    if (diffSec < 60) return "vua xong";
-    if (diffMin < 60) return `${diffMin} phut truoc`;
-    if (diffHour < 24) return `${diffHour} gio truoc`;
-    if (diffDay < 30) return `${diffDay} ngay truoc`;
+    if (diffSec < 60) return "vừa xong";
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffDay < 30) return `${diffDay} ngày trước`;
     return date.toLocaleDateString("vi-VN");
 };
 
 const getNotificationMessage = (notification) => {
-    const actorName = notification.user?.personal_info?.username || "Ai do";
-    const blogTitle = notification.blog?.title || "mot bai viet";
+    const actorName = notification.user?.personal_info?.username || "Ai đó";
+    const blogTitle = notification.blog?.title || "một bài viết";
 
     switch (notification.type) {
         case "like":
             return (
                 <>
                     <span className="notif-actor">{actorName}</span>
-                    {" da thich bai viet "}
+                    {" đã thích bài viết "}
                     <span className="notif-blog-title">"{blogTitle}"</span>
                 </>
             );
@@ -41,7 +41,7 @@ const getNotificationMessage = (notification) => {
             return (
                 <>
                     <span className="notif-actor">{actorName}</span>
-                    {" da binh luan vao bai viet "}
+                    {" đã bình luận vào bài viết "}
                     <span className="notif-blog-title">"{blogTitle}"</span>
                 </>
             );
@@ -49,12 +49,12 @@ const getNotificationMessage = (notification) => {
             return (
                 <>
                     <span className="notif-actor">{actorName}</span>
-                    {" da tra loi binh luan cua ban trong bai viet "}
+                    {" đã trả lời bình luận của bạn trong bài viết "}
                     <span className="notif-blog-title">"{blogTitle}"</span>
                 </>
             );
         default:
-            return <span>Ban co thong bao moi</span>;
+            return <span>Bạn có thông báo mới</span>;
     }
 };
 
@@ -190,7 +190,7 @@ const NotificationPage = () => {
     if (!user) {
         return (
             <div className="notification-page">
-                <p className="notif-empty-msg">Vui long dang nhap de xem thong bao.</p>
+                <p className="notif-empty-msg">Vui lòng đăng nhập để xem thông báo.</p>
             </div>
         );
     }
@@ -200,7 +200,7 @@ const NotificationPage = () => {
             <div className="notification-container">
                 <div className="notification-header">
                     <div className="notification-header-left">
-                        <h1 className="notification-title">Thong bao</h1>
+                        <h1 className="notification-title">Thông báo</h1>
                         {unreadCount > 0 && (
                             <span className="notification-header-badge">{unreadCount}</span>
                         )}
@@ -209,7 +209,7 @@ const NotificationPage = () => {
                     {unreadCount > 0 && (
                         <button className="notif-mark-all-btn" onClick={handleMarkAllRead}>
                             <i className="fi fi-rr-check-double"></i>
-                            Danh dau tat ca la da doc
+                            Đánh dấu tất cả đã đọc
                         </button>
                     )}
                 </div>
@@ -219,14 +219,14 @@ const NotificationPage = () => {
                         className={`notification-filter-btn${filter === "all" ? " active" : ""}`}
                         onClick={() => handleFilterChange("all")}
                     >
-                        Tat ca
+                        Tất cả
                     </button>
 
                     <button
                         className={`notification-filter-btn${filter === "unread" ? " active" : ""}`}
                         onClick={() => handleFilterChange("unread")}
                     >
-                        Chua doc
+                        Chưa đọc
                         {unreadCount > 0 && (
                             <span className="notification-filter-count">{unreadCount}</span>
                         )}
@@ -245,8 +245,8 @@ const NotificationPage = () => {
                             <i className="fi fi-rr-bell-slash notif-empty-icon"></i>
                             <p className="notif-empty-msg">
                                 {filter === "unread"
-                                    ? "Ban da doc het thong bao!"
-                                    : "Chua co thong bao nao."}
+                                    ? "Bạn đã đọc hết thông báo!"
+                                    : "Chưa có thông báo nào."}
                             </p>
                         </div>
                     ) : (

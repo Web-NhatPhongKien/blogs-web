@@ -5,27 +5,22 @@ import joi from "joi";
 import User from "../schemas/user.schema.js";
 import Blog from "../schemas/blog.schema.js";
 import Notification from "../schemas/notification.schema.js";
-import BlogLike from "../schemas/blog-like.schema.js";
 import Comment from "../schemas/comment.schema.js";
-
-
-
 
 class BlogController {
     getLatestBlogs = async (req, res) => {
         try {
             const page = Number(req.body.page) || 1;
-            const maxLimit = 2;
+            const limit = Math.min(Math.max(Number(req.body.limit) || 5, 1), 20);
 
-            const blogs = await BlogService.getLatestBlogsService(page, maxLimit);
-            const totalDocs = await BlogService.getAllLatestBlogsCountService();
+            const { blogs, totalDocs, totalPages } = await BlogService.getLatestBlogsService(page, limit);
             
             return res.status(200).json({
                 blogs,
                 page,
-                limit: maxLimit,
+                limit,
                 totalDocs,
-                totalPages: Math.ceil(totalDocs / maxLimit)
+                totalPages
             });
         } catch (err) {
             console.error("Lỗi khi lấy latest blogs:", err);
@@ -35,9 +30,9 @@ class BlogController {
 
     getTrendingBlogs = async (req, res) => {
         try {
-            const maxLimit = 5;
+            const limit = 5;
             
-            const blogs = await BlogService.getTrendingBlogsService(maxLimit);
+            const blogs = await BlogService.getTrendingBlogsService(limit);
             
             return res.status(200).json({ blogs });
         } catch (err) {
@@ -46,63 +41,46 @@ class BlogController {
         }
     }
 
+    getPopularTags = async (req, res) => {
+        try {
+            const limit = 10;
+
+            const tags = await BlogService.getPopularTagsService(limit);
+
+            return res.status(200).json({ tags });
+        } catch (err) {
+            console.error("Lỗi khi lấy popular tags:", err);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
     searchBlogs = async (req, res, next) => {
         try {
             const { tag, query, author, eliminate_blog } = req.body;
             const page = Number(req.body.page) || 1;
-            const limit = Number(req.body.limit) || 5;
+            const limit = Math.min(Math.max(Number(req.body.limit) || 5, 1), 20);
 
-            const blogs = await BlogService.searchBlogsService({
-                tag, 
-                query, 
-                author, 
-                page, 
-                limit, 
+            const { blogs, totalDocs, totalPages } = await BlogService.searchBlogsService({
+                tag,
+                query,
+                author,
+                page,
+                limit,
                 eliminate_blog
             });
 
-            return res.status(200).json({ blogs });
-        } catch (err) {
-            next(err);
-        }
-    }
-
-    getAllLatestBlogsCount = async (req, res, next) => {
-        try {
-            const count = await BlogService.getAllLatestBlogsCountService();
-            return res.status(200).json({ totalDocs: count });
-        } catch (err) {
-            next(err);
-        }
-    };
-
-    getSearchBlogsCount = async (req, res, next) => {
-        try {
-            const { tag, query, author, eliminate_blog } = req.body;
-            const page = Number(req.body.page) || 1;
-            const limit = Number(req.body.limit) || 5;
-            
-            const blogs = await BlogService.searchBlogsService({
-                tag, 
-                query, 
-                author, 
-                page, 
-                limit, 
-                eliminate_blog
-            });
-            const totalDocs = await BlogService.getSearchBlogsCountService({ tag, query, author });
-            
             return res.status(200).json({
                 blogs,
                 page,
                 limit,
                 totalDocs,
-                totalPages: Math.ceil(totalDocs / limit)
+                totalPages
             });
         } catch (err) {
             next(err);
         }
-    };
+    }
+
 
     createBlog = async (req, res, next) => {
         try {

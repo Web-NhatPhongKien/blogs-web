@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/navbar";
+import Navbar from "./components/navbar.component";
 import HomePage from "./pages/home.page";
 import SearchPage from "./pages/search.page";
 import PageNotFound from "./pages/404.page";
@@ -73,7 +73,7 @@ const App = () => {
                     <Route path="tags" element={<AdminTags />} />
                 </Route>
                 <Route path="search/:query" element={<SearchPage />} />
-                <Route path="user/:id" element={<Profile />} />
+                <Route path="user/:username" element={<Profile />} />
                 <Route path="blog/:blog_id" element={<BlogPage />} />
                 <Route
                     path="notifications"

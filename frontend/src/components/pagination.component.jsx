@@ -27,7 +27,7 @@ const Pagination = ({ state, fetchDataFun }) => {
                 disabled={page === 1}
                 onClick={() => fetchDataFun({ page: page - 1 })}
             >
-                Prev
+                Trước
             </button>
 
             {pageNumbers.map((pageNumber, i) => {
@@ -54,7 +54,7 @@ const Pagination = ({ state, fetchDataFun }) => {
                 disabled={page === totalPages}
                 onClick={() => fetchDataFun({ page: page + 1 })}
             >
-                Next
+                Sau
             </button>
         </div>
     );

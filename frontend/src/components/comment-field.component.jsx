@@ -12,8 +12,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
     const { user } = useAuth();
     const access_token = sessionStorage.getItem("token");
     const username = user?.personal_info?.username;
-    const fullname = user?.personal_info?.fullname || username;
-    const profile_image = user?.personal_info?.profile_image || user?.personal_info?.profile_img;
+    const profile_img = user?.personal_info?.profile_image || user?.personal_info?.profile_img;
     
     let { 
         blog, 
@@ -26,14 +25,14 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
 
     const handleComment = () => {
         if (!access_token) {
-            return toast.error("login first to leave a comment");
+            return toast.error("Đăng nhập để viết bình luận");
         }
         
         if (!comment.length) {
-            return toast.error("Write something to leave a comment");
+            return toast.error("Vui lòng nhập nội dung bình luận");
         }
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/add-comment", {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/comments/add-comment", {
             _id,
             blog_author,
             comment,
@@ -42,7 +41,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
         .then(({ data }) => {
             setComment("");
 
-            data.commented_by = { personal_info: { username, profile_image, fullname } };
+            data.commented_by = { personal_info: { username, profile_img } };
 
             let newCommentArr;
 
@@ -105,7 +104,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder={action === "comment" ? "Leave a comment" : "Leave a reply"}
+                placeholder={action === "comment" ? "Viết bình luận..." : "Viết trả lời..."}
                 className="input-box comment-field-textarea"
             ></textarea>
             <button className="btn-dark comment-field-submit" onClick={handleComment}>

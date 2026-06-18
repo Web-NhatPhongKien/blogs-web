@@ -8,7 +8,7 @@ import CommentCard from "./comment-card.component";
 export const fetchComments = async ({ skip = 0, blog_id, setParentCommentCountFun, comment_array = null }) => {
     let res;
 
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog-comments", { blog_id, skip })
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/comments/get-blog-comments", { blog_id, skip })
         .then(({ data }) => {
 
             data.map(comment => {
@@ -57,7 +57,7 @@ const CommentsContainer = () => {
     return (
         <div className={`comments-panel ${commentsWrapper ? "open" : ""}`}>
             <div className="comments-panel-header">
-                <h1 className="comments-panel-title">Comments</h1>
+                <h1 className="comments-panel-title">Bình luận</h1>
 
                 <p className="comments-panel-blog-title">{title}</p>
 
@@ -71,7 +71,7 @@ const CommentsContainer = () => {
 
             <hr className="comments-panel-divider" />
 
-            <CommentField action="comment" />
+            <CommentField action="Bình luận" />
 
             {
                 commentsArray && commentsArray.length ?
@@ -80,7 +80,7 @@ const CommentsContainer = () => {
                             <CommentCard key={comment._id || i} index={i} leftVal={comment.childrenLevel * 4} commentData={comment} />
                         );
                     })
-                    : <NoDataMessage message="No comments" />
+                    : <NoDataMessage message="Chưa có bình luận" />
             }
 
             {
@@ -89,7 +89,7 @@ const CommentsContainer = () => {
                         onClick={loadMoreComments}
                         className="comments-load-more"
                     >
-                        Load More
+                        Xem thêm
                     </button>
                     : ""
             }

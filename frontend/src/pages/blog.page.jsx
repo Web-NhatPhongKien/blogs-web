@@ -52,7 +52,7 @@ const BlogPage = () => {
 
     let { 
         title, content, banner, publishedAt, 
-        author: { personal_info: { fullname, username: author_username, profile_img } } 
+        author: { personal_info: { username: author_username, profile_img } } 
     } = blog;
     const contentBlocks = getContentBlocks(content);
 
@@ -64,7 +64,7 @@ const BlogPage = () => {
             }
         } : {};
 
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id }, config)
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/user/get-blog", { blog_id }, config)
             .then(async ({ data: { blog, liked_by_user } }) => {
                 
                 blog.comments = await fetchComments({ 
@@ -75,7 +75,7 @@ const BlogPage = () => {
                 setBlog(blog); 
                 setLikedByUser(Boolean(liked_by_user));
 
-                axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { 
+                axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/search-blogs", { 
                     tag: blog.tags, 
                     limit: 6, 
                     eliminate_blog: blog_id 
@@ -130,17 +130,15 @@ const BlogPage = () => {
                                 
                                 <div className="blog-page-author">
                                     <img src={profile_img} className="blog-page-author-avatar" />
-                                    <p className="blog-page-author-name">
-                                        {fullname} <br />
-                                        <Link to={`/user/${author_username}`} className="blog-page-author-link">
+                
+                                    <Link to={`/user/${author_username}`} className="blog-page-author-link">
                                             @{author_username}
-                                        </Link>
-                                    </p>
+                                    </Link>
                                 </div>
                                 
             
                                 <p className="blog-page-date">
-                                    Published on {getDay(publishedAt)}
+                                    Đăng vào {getDay(publishedAt)}
                                 </p>
                             </div>
                         </div>
@@ -159,7 +157,7 @@ const BlogPage = () => {
 
                         {similarBlogs !== null && similarBlogs.length ?
                             <>
-                                <h1 className="blog-page-similar-title">Similar Blogs</h1>
+                                <h1 className="blog-page-similar-title">Bài viết tương tự</h1>
                                 {similarBlogs.map((blog, i) => {
                                     let { author: { personal_info } } = blog;
                                     return (

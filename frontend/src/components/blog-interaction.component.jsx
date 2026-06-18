@@ -11,7 +11,6 @@ const BlogInteraction = () => {
         blog, 
         blog: { 
             _id, 
-            title, 
             blog_id, 
             activity, 
             activity: { total_likes, total_comments }, 
@@ -38,7 +37,7 @@ const BlogInteraction = () => {
             setBlog({ ...blog, activity: { ...activity, total_likes } });
 
 
-            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/like-blog", { _id, isLikedByUser }, getAuthConfig())
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/like-blog", { _id, isLikedByUser }, getAuthConfig())
             .then(({ data }) => {
                 console.log(data);
             })
@@ -48,7 +47,7 @@ const BlogInteraction = () => {
 
         } else {
 
-            toast.error("Please log in to like this blog");
+            toast.error("Đăng nhập để thích bài viết này");
         }
     };
 
@@ -86,9 +85,6 @@ const BlogInteraction = () => {
                             <Link to={`/editor/${blog_id}`} className="blog-interaction-edit">Edit</Link> : ""
                         }
 
-                        <Link to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`} target="_blank" className="blog-interaction-share">
-                            <i className="fi fi-brands-twitter"></i>
-                        </Link>
                     </div>
                 </div>
             

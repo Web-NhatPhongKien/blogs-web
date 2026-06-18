@@ -124,7 +124,7 @@ const deleteBlog = (blog, token, target) => {
             target.disabled = true;
 
             axios.post(
-                import.meta.env.VITE_SERVER_DOMAIN + "/delete-blog",
+                import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/delete-blog",
                 { blog_id },
                 {
                     headers: {

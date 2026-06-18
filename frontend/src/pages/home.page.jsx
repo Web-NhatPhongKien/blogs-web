@@ -10,14 +10,14 @@ import Pagination from "../components/pagination.component";
 
 
 const HomePage = () => {
+    const BLOGS_PER_PAGE = 5;
     let [ blogs, setBlogs ] = useState(null);
     let [ trendingBlogs, setTrendingBlogs ] = useState(null);    
-    let [ pageState, setPageState ] = useState("home");
-
-    let categories = ["programming", "hollywood", "sports", "technology", "travel", "fashion", "business", "health", "education"];
+    let [ categories, setCategories ] = useState([]);
+    let [ pageState, setPageState ] = useState("Trang chủ");
 
     const fetchLatestBlogs = ({ page = 1 } = {}) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/latest-blogs", { page, limit: BLOGS_PER_PAGE })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
                     data: data.blogs,
@@ -33,9 +33,8 @@ const HomePage = () => {
             });
     }
 
-    // Lấy bài viết theo danh mục (có phân trang)
     const fetchBlogsByCategory = ({ page = 1 }) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { tag: pageState, page })
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/search-blogs", { tag: pageState, page, limit: BLOGS_PER_PAGE })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
                     data: data.blogs,
@@ -52,7 +51,7 @@ const HomePage = () => {
     };
 
     const fetchTrendingBlogs = () => {
-        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blogs")
+        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/trending-blogs")
         .then(({ data }) => {
             setTrendingBlogs(data.blogs);
         })
@@ -62,15 +61,24 @@ const HomePage = () => {
         })
     }
 
+    const fetchPopularTags = () => {
+        axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/popular-tags")
+        .then(({ data }) => {
+            setCategories(data.tags || []);
+        })
+        .catch(err => {
+            console.log(err);
+            setCategories([]);
+        })
+    }
+
     const loadBlogByCategory = (e) => {
-        let category = e.target.innerText.toLowerCase();
+        let category = e.currentTarget.dataset.category;
         
-        // Reset state blog về null để hiện loader
         setBlogs(null);
 
-        // Chuyển đổi trạng thái nếu tag đang được chọn thì hủy, ngược lại thì chọn tag
         if (pageState === category) {
-            setPageState("home");
+            setPageState("Trang chủ");
         } else {
             setPageState(category);
         }
@@ -78,16 +86,18 @@ const HomePage = () => {
     }
 
     useEffect(() => {
-        // Kiểm tra pageState đang ở trang chủ hay danh mục để gọi API tương ứng
-        if (pageState === "home") {
+        if (pageState === "Trang chủ") {
             fetchLatestBlogs({ page: 1 });
         } else {
             fetchBlogsByCategory({ page: 1 });
         }
 
-        // Chỉ fetch trending blogs nếu chưa có dữ liệu
         if (!trendingBlogs) {
             fetchTrendingBlogs();
+        }
+
+        if (!categories.length) {
+            fetchPopularTags();
         }
 
     }, [pageState])
@@ -109,11 +119,11 @@ const HomePage = () => {
                                             <BlogPostCard content={blog} author={blog.author.personal_info} />
                                         );
                                     })
-                                : <NoDataMessage message="No blogs published" />
+                                : <NoDataMessage message="Chưa có bài viết" />
                             )}
                             <Pagination 
                                 state={blogs} 
-                                fetchDataFun={(pageState === "home" ? fetchLatestBlogs : fetchBlogsByCategory)} 
+                                fetchDataFun={(pageState === "Trang chủ" ? fetchLatestBlogs : fetchBlogsByCategory)} 
                             />
                         </>
                     </InPageNavigation>
@@ -121,19 +131,19 @@ const HomePage = () => {
           
                 <div className="desktop-only">
                     <div className="stack-lg">
-                        {/* Bộ lọc theo danh mục (Categories) */}
                         <div>
-                            <h1 className="category-title">Stories form all interests</h1>
+                            <h1 className="category-title">Chủ đề phổ biến</h1>
     
                             <div className="tags-wrap">
-                                {categories.map((category, i) => {
+                                {categories.map((category) => {
                                     return (
                                         <button 
                                             onClick={loadBlogByCategory} 
-                                            className={`tag ${pageState === category ? "active" : ""}`} 
-                                            key={i}
+                                            data-category={category.name}
+                                            className={`tag ${pageState === category.name ? "active" : ""}`} 
+                                            key={category.name}
                                         >
-                                            {category}
+                                            {category.name}
                                         </button>
                                     );
                                 })}
@@ -141,10 +151,9 @@ const HomePage = () => {
 
                         </div>
                         
-                        {/* Danh sách Trending Blogs */}
                         <div>
                             <h1 className="category-title">
-                                Trending <i className="fi fi-br-arrow-trend-up"></i>
+                                Xu hướng <i className="fi fi-br-arrow-trend-up"></i>
                             </h1>
 
                             {trendingBlogs == null ? (
@@ -156,7 +165,7 @@ const HomePage = () => {
                                             <MinimalBlogPost blog={blog} index={i} />
                                         );
                                     })
-                                : <NoDataMessage message="No trending blogs" />
+                                : <NoDataMessage message="Chưa có bài viết xu hướng" />
                             )}
 
                         </div>

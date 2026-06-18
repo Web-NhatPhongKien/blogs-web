@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import adminAPI from "../../services/adminApi.service";
+import toast from "react-hot-toast";
 
 const AdminBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -7,7 +8,7 @@ const AdminBlogs = () => {
 
   const [query, setQuery] = useState({
     page: 1,
-    limit: 10,
+    limit: 5,
     search: "",
     status: "all",
     tag: "",
@@ -37,7 +38,7 @@ const AdminBlogs = () => {
         totalPages: res.data.totalPages || 1,
       });
     } catch (err) {
-      alert(err?.response?.data?.error || "Không thể tải danh sách bài viết");
+      toast.success(err?.response?.data?.error || "Không thể tải danh sách bài viết");
     } finally {
       setLoading(false);
     }
@@ -92,14 +93,6 @@ const AdminBlogs = () => {
     }));
   };
 
-  const handleLimitChange = (e) => {
-    setQuery((prev) => ({
-      ...prev,
-      limit: Number(e.target.value),
-      page: 1,
-    }));
-  };
-
   const handleSort = (field) => {
     setQuery((prev) => ({
       ...prev,
@@ -142,11 +135,11 @@ const AdminBlogs = () => {
         hidden: !isHidden,
       });
 
-      alert(isHidden ? "Đã hiện bài viết" : "Đã ẩn bài viết");
+      toast.success(isHidden ? "Đã hiện bài viết" : "Đã ẩn bài viết");
 
       loadBlogs();
     } catch (err) {
-      alert(err?.response?.data?.error || "Cập nhật trạng thái thất bại");
+      toast.error(err?.response?.data?.error || "Cập nhật trạng thái thất bại");
     }
   };
 
@@ -160,32 +153,21 @@ const AdminBlogs = () => {
     try {
       await adminAPI.delete(`/blogs/${blog.blog_id}`);
 
-      alert("Xóa bài viết thành công");
+      toast.success("Xóa bài viết thành công");
 
       loadBlogs();
     } catch (err) {
-      alert(err?.response?.data?.error || "Xóa bài viết thất bại");
+      toast.error(err?.response?.data?.error || "Xóa bài viết thất bại");
     }
   };
 
   return (
     <div className="admin-section">
-      <div className="admin-section-header">
-        <div>
-          <h2>Quản lý bài viết</h2>
-          <p>Danh sách bài viết trong hệ thống, hỗ trợ ẩn, hiện và xóa.</p>
-        </div>
-
-        <div className="admin-total-box">
-          <span>Tổng bài viết</span>
-          <strong>{pagination.totalDocs}</strong>
-        </div>
-      </div>
 
       <div className="admin-toolbar admin-toolbar-blogs">
         <input
           type="text"
-          placeholder="Tìm theo tiêu đề, mô tả hoặc tag..."
+          placeholder="Tìm kiếm"
           value={query.search}
           onChange={handleSearchChange}
         />
@@ -205,13 +187,6 @@ const AdminBlogs = () => {
             </option>
           ))}
         </select>
-
-        <select value={query.limit} onChange={handleLimitChange}>
-          <option value={5}>5 dòng</option>
-          <option value={10}>10 dòng</option>
-          <option value={20}>20 dòng</option>
-          <option value={50}>50 dòng</option>
-        </select>
       </div>
 
       <div className="admin-table-card">
@@ -224,26 +199,26 @@ const AdminBlogs = () => {
                 <tr>
                   <th>Banner</th>
 
-                  <th onClick={() => handleSort("title")}>
-                    Tiêu đề {getSortIcon("title")}
+                  <th>
+                    Tiêu đề
                   </th>
 
                   <th>Tác giả</th>
 
-                  <th>Tags</th>
+                  <th>Danh mục</th>
 
                   <th>Trạng thái</th>
 
-                  <th onClick={() => handleSort("reads")}>
+                  {/* <th onClick={() => handleSort("reads")}>
                     Reads {getSortIcon("reads")}
-                  </th>
+                  </th> */}
 
                   <th onClick={() => handleSort("likes")}>
-                    Likes {getSortIcon("likes")}
+                    Lượt thích {getSortIcon("likes")}
                   </th>
 
                   <th onClick={() => handleSort("comments")}>
-                    Comments {getSortIcon("comments")}
+                    Bình luận {getSortIcon("comments")}
                   </th>
 
                   <th onClick={() => handleSort("publishedAt")}>
@@ -310,16 +285,14 @@ const AdminBlogs = () => {
                         <td>
                           <span
                             className={
-                              blog.draft
-                                ? "admin-badge admin-badge-red"
-                                : "admin-badge admin-badge-green"
+                              blog.draft ? "admin-badge admin-badge-red" : "admin-badge admin-badge-green"
                             }
                           >
-                            {blog.draft ? "Đang ẩn" : "Đang hiện"}
+                            {blog.draft ? "Ẩn" : "Hiện"}
                           </span>
                         </td>
 
-                        <td>{activity.total_reads || 0}</td>
+                        {/* <td>{activity.total_reads || 0}</td> */}
 
                         <td>{activity.total_likes || 0}</td>
 

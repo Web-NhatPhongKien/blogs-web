@@ -1,10 +1,10 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import BlogEditor from "../components/blog.editor";
+import BlogEditor from "../components/blog-editor.component";
 // XÓA: frontend không được import Mongoose schema từ backend
 //import userSchema from "../../../backend/schemas/user.schema";
 // THÊM: lấy user đăng nhập từ AuthContext của frontend
-import PublishForm from "../components/publish-form";
+import PublishForm from "../components/publish-form.component";
 import { useAuth } from "../context/auth.context";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
