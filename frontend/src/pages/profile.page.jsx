@@ -12,6 +12,8 @@ const Profile = () => {
   // user thực tế đang được hiển thị trên trang
   const [profileUser, setProfileUser] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  // THÊM: lưu tổng số bài lấy mới trực tiếp từ database
+  const [totalPosts, setTotalPosts] = useState(0);
 
   // Không có usernameParam nghĩa là đang ở /profile
   const isOwnProfile = !usernameParam || usernameParam === currentUser?.personal_info?.username;
@@ -76,6 +78,67 @@ const Profile = () => {
     loadProfile();
   }, [usernameParam, currentUser]);
 
+  // THÊM: luôn lấy total_posts mới nhất từ database,
+  // không dùng giá trị cũ trong sessionStorage
+  useEffect(() => {
+    const loadTotalPosts = async () => {
+      const targetUsername =
+        usernameParam ||
+        currentUser?.personal_info?.username;
+
+      if (!targetUsername) return;
+
+      try {
+        const serverDomain =
+          import.meta.env.VITE_SERVER_DOMAIN ||
+          "http://localhost:3000";
+
+        const response = await fetch(
+          `${serverDomain}/api/user/get-profile`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: targetUsername,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data?.error ||
+            data?.message ||
+            "Không thể lấy tổng số bài viết"
+          );
+        }
+
+        // Hỗ trợ cả hai dạng response:
+        // user trực tiếp hoặc { user: {...} }
+        const databaseUser = data.user || data;
+
+        setTotalPosts(
+          databaseUser?.account_info?.total_posts ?? 0
+        );
+      } catch (error) {
+        console.error(
+          "Lỗi lấy tổng số bài viết:",
+          error
+        );
+
+        setTotalPosts(0);
+      }
+    };
+
+    loadTotalPosts();
+  }, [
+    usernameParam,
+    currentUser?.personal_info?.username,
+  ]);
+
   // THÊM: trạng thái đang tải hồ sơ
   if (loadingProfile) {
     return (
@@ -117,8 +180,8 @@ const Profile = () => {
   const role = profileUser.role || "user";
   const userId = profileUser._id;
 
-  const totalPosts = accountInfo.total_posts || 0;
-  const totalReads = accountInfo.total_reads || 0;
+  // const totalPosts = accountInfo.total_posts || 0;
+  // const totalReads = accountInfo.total_reads || 0;
 
   const joinedAt = profileUser.joinedAt ? new Date(profileUser.joinedAt).toLocaleDateString("vi-VN") : "Chưa rõ";
 
@@ -217,7 +280,7 @@ const Profile = () => {
 
         {/* CỘT TRÁI */}
         <main className="profile-main">
-          <BlogsManage userId={userId} isOwnProfile={isOwnProfile}/>
+          <BlogsManage userId={userId} isOwnProfile={isOwnProfile} />
         </main>
       </div>
     </section>
