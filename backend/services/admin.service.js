@@ -288,16 +288,58 @@ class AdminService {
 
   // Xóa bài viết
   deleteBlogService = async (blogId) => {
-    const deletedBlog = await Blog.findOneAndDelete(
+    // SỬA: lấy bài trước để giữ lại author và _id
+    const blogToDelete = await Blog.findOne(
       getBlogFindQuery(blogId)
     );
 
-    if (!deletedBlog) {
+    if (!blogToDelete) {
       throw new Error("Không tìm thấy bài viết");
+    }
+
+    // SỬA: xóa bài khỏi collection blogs
+    await Blog.deleteOne({
+      _id: blogToDelete._id,
+    });
+
+    // THÊM: đếm lại chính xác số bài đã xuất bản còn lại của tác giả
+    const remainingPublishedPosts =
+      await Blog.countDocuments({
+        author: blogToDelete.author,
+        draft: false,
+      });
+
+    // THÊM:
+    // 1. Xóa ObjectId bài khỏi user.blogs
+    // 2. Gán lại total_posts theo dữ liệu thực tế trong collection blogs
+    const updatedAuthor =
+      await User.findByIdAndUpdate(
+        blogToDelete.author,
+        {
+          $pull: {
+            blogs: blogToDelete._id,
+          },
+
+          $set: {
+            "account_info.total_posts":
+              remainingPublishedPosts,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+    if (!updatedAuthor) {
+      throw new Error(
+        "Đã xóa bài viết nhưng không tìm thấy tác giả để cập nhật"
+      );
     }
 
     return {
       message: "Xóa bài viết thành công",
+      totalPosts:
+        updatedAuthor.account_info.total_posts,
     };
   };
 
@@ -313,8 +355,8 @@ class AdminService {
 
     const matchStage = search
       ? {
-          tags: new RegExp(search, "i"),
-        }
+        tags: new RegExp(search, "i"),
+      }
       : {};
 
     const sortStage = {};
@@ -330,12 +372,12 @@ class AdminService {
       { $unwind: "$tags" },
       ...(search
         ? [
-            {
-              $match: {
-                tags: new RegExp(search, "i"),
-              },
+          {
+            $match: {
+              tags: new RegExp(search, "i"),
             },
-          ]
+          },
+        ]
         : []),
       {
         $group: {
