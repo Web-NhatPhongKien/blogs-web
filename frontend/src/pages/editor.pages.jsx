@@ -62,7 +62,6 @@ const Editor = () => {
         <>
             <editorContext.Provider value={{blog,setBlog,editorState,setEditorState,textEditor,setTextEditor}}>
                 {
-                
                 token == null ? <Navigate to="/login" replace /> :
                 loading ? <p className="text-center mt-20">Đang tải...</p> :
                 blog == null ? <p className="text-center mt-20">Không tìm thấy bài viết</p> :

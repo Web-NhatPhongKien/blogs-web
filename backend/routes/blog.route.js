@@ -1,6 +1,7 @@
 import express from "express";
-import BlogController from "../controllers/blog.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
+import BlogController from "../controllers/blog.controller.js";
+
 
 
 const router = express.Router();
@@ -22,6 +23,5 @@ router.post("/user-written-blogs", verifyToken, BlogController.userWrittenBlogs)
 router.post("/user-written-blogs-count",verifyToken, BlogController.userWrittenBlogsCount)
 
 router.post("/delete-blog", verifyToken, BlogController.deleteBlog);
-
 
 export default router;
