@@ -1,6 +1,6 @@
 import express from "express";
 import BlogController from "../controllers/blog.controller.js";
-import { verifyToken, verifyTokenOptional } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 import UserController from "../controllers/user.controller.js";
 
 
@@ -24,6 +24,5 @@ router.post("/user-written-blogs-count",verifyToken, BlogController.userWrittenB
 
 router.post("/delete-blog", verifyToken, BlogController.deleteBlog);
 
-router.post("/get-blog", verifyTokenOptional, UserController.getBlog);
 
 export default router;
