@@ -37,7 +37,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
             // userId ở đây là _id của user đang được xem
             author: userId,
             page,
-            limit: 10,
+            limit: 5,
         })
             .then(({ data }) => {
                 const publicBlogs = data.blogs || [];
@@ -46,9 +46,9 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                 // nên chưa dùng filterPaginationData ở chế độ xem công khai
                 setBlogs({
                     results: publicBlogs,
-                    page,
-                    totalDocs: publicBlogs.length,
-                    totalPages: 1,
+                    page: Number(data.page) || page,
+                    totalDocs: Number(data.totalDocs) || 0,
+                    totalPages: Number(data.totalPages) || 1,
                 });
             })
             .catch((err) => {
@@ -204,11 +204,17 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                                     profile_img: "",
                                 }
                             }
+                            
                         />
                     ))
+                    
                 ) : (
                     <NoDataMessage message="Người dùng này chưa có bài viết" />
                 )}
+                <Pagination
+                    state={blogs}
+                    fetchDataFun={fetchUserBlogs}
+                />
             </div>
         );
     }
