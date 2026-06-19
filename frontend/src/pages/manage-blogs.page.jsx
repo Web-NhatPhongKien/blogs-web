@@ -7,6 +7,7 @@ import { filterPaginationData } from "../common/filter-pagination-data";
 import { Toaster } from "react-hot-toast";
 import InPageNavigation from "../components/inpage-navigation.component";
 import { UserCard, ManageDraftBlog } from "../components/usercard.component";
+import Pagination from "../components/pagination.component";
 
 
 // isOwnProfile = true  => profile của chính mình, có Edit/Delete/Drafts
@@ -17,6 +18,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
     const [query, setQuery] = useState("");
     const [drafts, setDrafts] = useState(null);
     const token = sessionStorage.getItem("token");
+    const maxLimit = 5;
 
     // THÊM: lấy bài public của user đang được xem
     const fetchUserBlogs = ({ page = 1 } = {}) => {
@@ -62,7 +64,7 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
     };
 
 
-    const getBlogs = ({ page, draft, deletedDocCount = 0 }) => {
+    const getBlogs = ({ page = 1, draft, deletedDocCount = 0 }) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/blogs/user-written-blogs", {
             page, draft, query, deletedDocCount
         }, {
@@ -72,13 +74,35 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
         })
             .then(async ({ data }) => {
                 let formattedData = await filterPaginationData({
-                    state: draft ? drafts : blogs,
+                    state: null,
                     data: data.blogs,
                     page,
                     user: token,
                     countRoute: "/api/blogs/user-written-blogs-count",
                     data_to_send: { draft, query }
                 })
+
+                const countResponse = await axios.post(
+                    import.meta.env.VITE_SERVER_DOMAIN +
+                        "/api/blogs/user-written-blogs-count",
+                    { draft, query },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const totalDocs = Number(countResponse.data.totalDocs) || 0;
+
+                formattedData = {
+                    ...formattedData,
+                    results: data.blogs,
+                    page: Number(page),
+                    totalDocs,
+                    totalPages: Math.ceil(totalDocs / maxLimit),
+                    deletedDocCount
+                };
 
                 if (draft) {
                     setDrafts(formattedData)
@@ -92,6 +116,23 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                 console.log(err)
             })
     }
+
+
+    const getPublishedBlogs = ({ page = 1 }) => {
+        getBlogs({
+            page,
+            draft: false,
+            deletedDocCount: blogs?.deletedDocCount || 0
+        });
+    };
+
+    const getDraftBlogs = ({ page = 1 }) => {
+        getBlogs({
+            page,
+            draft: true,
+            deletedDocCount: drafts?.deletedDocCount || 0
+        });
+    };
 
     // THÊM: khi mở /user/:username thì lấy bài public của user đó
     useEffect(() => {
@@ -204,6 +245,10 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                                             </div>
                                         })
                                     }
+                                    <Pagination
+                                        state={blogs}
+                                        fetchDataFun={getPublishedBlogs}
+                                    />
                                 </>
                                 : <NoDataMessage message="Không có bài đăng" />
                     }
@@ -216,10 +261,16 @@ const BlogsManage = ({ userId, isOwnProfile = true }) => {
                                     {
                                         drafts.results.map((blog, i) => {
                                             return <div key={i}>
-                                                <ManageDraftBlog blog={{ ...blog, index: i + 1, setStateFunc: setDrafts }} />
+                                                <ManageDraftBlog blog={{ ...blog, index: i, setStateFunc: setDrafts }} />
                                             </div>
                                         })
+
+                                        
                                     }
+                                    <Pagination
+                                        state={drafts}
+                                        fetchDataFun={getDraftBlogs}
+                                    />
                                 </>
                                 : <NoDataMessage message="Không có bản nháp" />
                     }
