@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 import axios from "axios";
 import { getAuthConfig } from "../common/auth-config";
+import Pagination from "../components/pagination.component";
 
 const notifyUnreadChanged = (detail) => {
     window.dispatchEvent(new CustomEvent("notifications:unread-change", { detail }));
@@ -74,7 +75,7 @@ const NotificationPage = () => {
             params: {
                 filter: currentFilter,
                 page: currentPage,
-                limit: 20
+                limit: 10
             }
         };
 
@@ -82,6 +83,7 @@ const NotificationPage = () => {
             const res = await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/notifications", config);
 
             setNotifications(res.data.notifications);
+            setPage(res.data.page || currentPage);
             setTotalPages(res.data.totalPages);
         } catch (err) {
             console.error("Loi lay thong bao:", err);
@@ -106,7 +108,6 @@ const NotificationPage = () => {
     useEffect(() => {
         fetchNotifications(filter, 1);
         fetchUnreadCount();
-        setPage(1);
     }, [filter, fetchNotifications, fetchUnreadCount]);
 
     const handleRead = async (id) => {
@@ -165,26 +166,8 @@ const NotificationPage = () => {
         setFilter(newFilter);
     };
 
-    const handleLoadMore = async () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        const config = {
-            ...getAuthConfig(),
-            params: {
-                filter,
-                page: nextPage,
-                limit: 20
-            }
-        };
-
-        try {
-            const res = await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/api/notifications", config);
-
-            setNotifications((prev) => [...prev, ...res.data.notifications]);
-            setTotalPages(res.data.totalPages);
-        } catch (err) {
-            console.error("Loi load more:", err);
-        }
+    const goToPage = ({ page: nextPage }) => {
+        fetchNotifications(filter, nextPage);
     };
 
     if (!user) {
@@ -260,12 +243,12 @@ const NotificationPage = () => {
                                 />
                             ))}
 
-                            {page < totalPages && (
-                                <button className="notif-load-more-btn" onClick={handleLoadMore}>
-                                    <i className="fi fi-rr-angle-down"></i>
-                                    Xem them
-                                </button>
-                            )}
+                            <div className="notification-pagination">
+                                <Pagination
+                                    state={{ page, totalPages }}
+                                    fetchDataFun={goToPage}
+                                />
+                            </div>
                         </>
                     )}
                 </div>
@@ -333,12 +316,12 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
 
             <div className="notification-actions">
                 {!notification.seen && (
-                    <span className="notification-unread-dot" title="Chua doc"></span>
+                    <span className="notification-unread-dot" title="Chưa đọc"></span>
                 )}
 
                 <button
                     className="notification-delete-btn"
-                    title="Xoa thong bao"
+                    title="Xóa thông báo"
                     onClick={(e) => {
                         e.stopPropagation();
                         onDelete(notification._id);
